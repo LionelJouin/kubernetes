@@ -148,3 +148,172 @@ type ServiceCIDRList struct {
 	// items is the list of ServiceCIDRs.
 	Items []ServiceCIDR `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+
+// +genclient
+// +genclient:nonNamespaced
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:prerelease-lifecycle-gen:introduced=1.30
+
+// PodNetwork represents a logical network in Kubernetes Cluster.
+type PodNetwork struct {
+	metav1.TypeMeta `json:",inline"`
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+
+	// Spec defines the behavior of a PodNetwork.
+	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// +optional
+	Spec PodNetworkSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+
+	// Most recently observed status of the PodNetwork.
+	// Populated by the system.
+	// Read-only.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// +optional
+	Status PodNetworkStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
+}
+
+// PodNetworkSpec contains the specifications for podNetwork object
+type PodNetworkSpec struct {
+
+	// Enabled is used to administratively enable/disable a PodNetwork.
+	// When set to false, PodNetwork Ready condition will be set to False.
+	// Defaults to True.
+	//
+	// +optional
+	Enabled bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
+
+	// ParametersRefs points to the vendor or implementation specific parameters
+	// objects for the PodNetwork.
+	//
+	// +optional
+	ParametersRefs []ParametersRef `json:"parametersRefs,omitempty" protobuf:"bytes,2,opt,name=parametersRefs"`
+
+	// Provider specifies the provider implementing this PodNetwork.
+	//
+	// +optional
+	Provider string `json:"provider,omitempty" protobuf:"bytes,3,opt,name=provider"`
+}
+
+// ParametersRef points to a custom resource containing additional
+// parameters for thePodNetwork.
+type ParametersRef struct {
+	// Group is the API group of k8s resource e.g. k8s.cni.cncf.io
+	Group string `json:"group" protobuf:"bytes,1,opt,name=group"`
+
+	// Kind is the API name of k8s resource e.g. network-attachment-definitions
+	Kind string `json:"kind" protobuf:"bytes,2,opt,name=kind"`
+
+	// Name of the resource.
+	Name string `json:"name" protobuf:"bytes,3,opt,name=name"`
+
+	// Namespace of the resource.
+	// +optional
+	Namespace string `json:"namespace,omitempty" protobuf:"bytes,4,opt,name=namespace"`
+}
+
+// PodNetworkStatus contains the status information related to the PodNetwork.
+type PodNetworkStatus struct {
+	// Conditions describe the current conditions of the PodNetwork.
+	//
+	// Known condition types are:
+	// * "Ready"
+	// * "ParamsReady"
+	//
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,req,name=conditions"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:prerelease-lifecycle-gen:introduced=1.30
+
+// PodNetworkList is a list of PodNetwork objects.
+type PodNetworkList struct {
+	metav1.TypeMeta `json:",inline"`
+
+	// Standard list metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	metav1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+
+	// items is a list of schema objects.
+	Items []PodNetwork `json:"items" protobuf:"bytes,2,rep,name=items"`
+}
+
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:prerelease-lifecycle-gen:introduced=1.30
+
+// PodNetworkAttachment provides optional pod-level configuration of PodNetwork.
+type PodNetworkAttachment struct {
+	metav1.TypeMeta `json:",inline"`
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+
+	// Spec defines the behavior of a PodNetworkAttachment.
+	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// +optional
+	Spec PodNetworkAttachmentSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+
+	// Most recently observed status of the PodNetworkAttachment.
+	// Populated by the system.
+	// Read-only.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// +optional
+	Status PodNetworkAttachmentStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
+}
+
+// PodNetworkAttachmentSpec is the specification for the PodNetworkAttachment resource.
+type PodNetworkAttachmentSpec struct {
+	// PodNetworkName refers to a PodNetwork object that this PodNetworkAttachment is
+	// connected to.
+	//
+	// +required
+	PodNetworkName string `json:"podNetworkName" protobuf:"bytes,1,req,name=podNetworkName"`
+
+	// ParametersRefs points to the vendor or implementation specific parameters
+	// object for the PodNetworkAttachment.
+	//
+	// +optional
+	ParametersRefs []ParametersRef `json:"parametersRefs,omitempty" protobuf:"bytes,2,opt,name=parametersRefs"`
+}
+
+// PodNetworkAttachmentStatus is the status for the PodNetworkAttachment resource.
+type PodNetworkAttachmentStatus struct {
+	// Conditions describe the current conditions of the PodNetworkAttachment.
+	//
+	// Known condition types are:
+	// * "Ready"
+	// * "ParamsReady"
+	//
+	// +optional
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,1,req,name=conditions"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:prerelease-lifecycle-gen:introduced=1.30
+
+// PodNetworkAttachmentList contains a list of PodNetworkAttachment.
+type PodNetworkAttachmentList struct {
+	metav1.TypeMeta `json:",inline"`
+
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	metav1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+
+	// items is the list of PodNetworkAttachments.
+	Items []PodNetworkAttachment `json:"items" protobuf:"bytes,2,rep,name=items"`
+}
