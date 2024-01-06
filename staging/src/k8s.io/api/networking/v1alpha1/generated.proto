@@ -66,6 +66,23 @@ message IPAddressSpec {
   optional ParentReference parentRef = 1;
 }
 
+// ParametersRef points to a custom resource containing additional
+// parameters for thePodNetwork.
+message ParametersRef {
+  // Group is the API group of k8s resource e.g. k8s.cni.cncf.io
+  optional string group = 1;
+
+  // Kind is the API name of k8s resource e.g. network-attachment-definitions
+  optional string kind = 2;
+
+  // Name of the resource.
+  optional string name = 3;
+
+  // Namespace of the resource.
+  // +optional
+  optional string namespace = 4;
+}
+
 // ParentReference describes a reference to a parent object.
 message ParentReference {
   // Group is the group of the object being referenced.
@@ -83,6 +100,136 @@ message ParentReference {
   // Name is the name of the object being referenced.
   // +required
   optional string name = 4;
+}
+
+// PodNetwork represents a logical network in Kubernetes Cluster.
+message PodNetwork {
+  // Standard object's metadata.
+  // More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+  // +optional
+  optional k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 1;
+
+  // Spec defines the behavior of a PodNetwork.
+  // https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+  // +optional
+  optional PodNetworkSpec spec = 2;
+
+  // Most recently observed status of the PodNetwork.
+  // Populated by the system.
+  // Read-only.
+  // More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+  // +optional
+  optional PodNetworkStatus status = 3;
+}
+
+// PodNetworkAttachment provides optional pod-level configuration of PodNetwork.
+message PodNetworkAttachment {
+  // Standard object's metadata.
+  // More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+  // +optional
+  optional k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 1;
+
+  // Spec defines the behavior of a PodNetworkAttachment.
+  // https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+  // +optional
+  optional PodNetworkAttachmentSpec spec = 2;
+
+  // Most recently observed status of the PodNetworkAttachment.
+  // Populated by the system.
+  // Read-only.
+  // More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+  // +optional
+  optional PodNetworkAttachmentStatus status = 3;
+}
+
+// PodNetworkAttachmentList contains a list of PodNetworkAttachment.
+message PodNetworkAttachmentList {
+  // Standard object's metadata.
+  // More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+  // +optional
+  optional k8s.io.apimachinery.pkg.apis.meta.v1.ListMeta metadata = 1;
+
+  // items is the list of PodNetworkAttachments.
+  repeated PodNetworkAttachment items = 2;
+}
+
+// PodNetworkAttachmentSpec is the specification for the PodNetworkAttachment resource.
+message PodNetworkAttachmentSpec {
+  // PodNetworkName refers to a PodNetwork object that this PodNetworkAttachment is
+  // connected to.
+  //
+  // +required
+  optional string podNetworkName = 1;
+
+  // ParametersRefs points to the vendor or implementation specific parameters
+  // object for the PodNetworkAttachment.
+  //
+  // +optional
+  repeated ParametersRef parametersRefs = 2;
+}
+
+// PodNetworkAttachmentStatus is the status for the PodNetworkAttachment resource.
+message PodNetworkAttachmentStatus {
+  // Conditions describe the current conditions of the PodNetworkAttachment.
+  //
+  // Known condition types are:
+  // * "Ready"
+  // * "ParamsReady"
+  //
+  // +optional
+  // +patchMergeKey=type
+  // +patchStrategy=merge
+  // +listType=map
+  // +listMapKey=type
+  repeated k8s.io.apimachinery.pkg.apis.meta.v1.Condition conditions = 1;
+}
+
+// PodNetworkList is a list of PodNetwork objects.
+message PodNetworkList {
+  // Standard list metadata.
+  // More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+  // +optional
+  optional k8s.io.apimachinery.pkg.apis.meta.v1.ListMeta metadata = 1;
+
+  // items is a list of schema objects.
+  repeated PodNetwork items = 2;
+}
+
+// PodNetworkSpec contains the specifications for podNetwork object
+message PodNetworkSpec {
+  // Enabled is used to administratively enable/disable a PodNetwork.
+  // When set to false, PodNetwork Ready condition will be set to False.
+  // Defaults to True.
+  //
+  // +optional
+  optional bool enabled = 1;
+
+  // ParametersRefs points to the vendor or implementation specific parameters
+  // objects for the PodNetwork.
+  //
+  // +optional
+  repeated ParametersRef parametersRefs = 2;
+
+  // Provider specifies the provider implementing this PodNetwork.
+  //
+  // +optional
+  optional string provider = 3;
+}
+
+// PodNetworkStatus contains the status information related to the PodNetwork.
+message PodNetworkStatus {
+  // Conditions describe the current conditions of the PodNetwork.
+  //
+  // Known condition types are:
+  // * "Ready"
+  // * "ParamsReady"
+  //
+  // +optional
+  // +patchMergeKey=type
+  // +patchStrategy=merge
+  // +listType=map
+  // +listMapKey=type
+  repeated k8s.io.apimachinery.pkg.apis.meta.v1.Condition conditions = 1;
 }
 
 // ServiceCIDR defines a range of IP addresses using CIDR format (e.g. 192.168.0.0/24 or 2001:db2::/64).

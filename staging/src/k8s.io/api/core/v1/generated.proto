@@ -2364,6 +2364,45 @@ message NamespaceStatus {
   repeated NamespaceCondition conditions = 2;
 }
 
+// Network defines what PodNetwork to attach to the Pod.
+message Network {
+  // PodNetworkName is name of PodNetwork to attach
+  // Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set
+  //
+  // +optional
+  optional string podNetworkName = 1;
+
+  // PodNetworkAttachmentName is name of PodNetwork to attach
+  // Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set
+  //
+  // +optional
+  optional string podNetworkAttachmentName = 2;
+
+  // InterfaceName is the network interface name inside the Pod for this attachment.
+  // This field functionality is dependent on the implementation and its support
+  // for it.
+  // Examples: eth1 or net1
+  //
+  // +optional
+  optional string interfaceName = 3;
+
+  // IsDefaultGW4 is a flag indicating this PodNetwork will hold the IPv4 Default
+  // Gateway inside the Pod. Only one Network can have this flag set to True.
+  // This field functionality is dependent on the implementation and its support
+  // for it.
+  //
+  // +optional
+  optional bool isDefaultGW4 = 4;
+
+  // IsDefaultGW6 is a flag indicating this PodNetwork will hold the IPv6 Default
+  // Gateway inside the Pod. Only one Network can have this flag set to True.
+  // This field functionality is dependent on the implementation and its support
+  // for it.
+  //
+  // +optional
+  optional bool isDefaultGW46 = 5;
+}
+
 // Node is a worker node in Kubernetes.
 // Each node will have a unique identifier in the cache (i.e. in etcd).
 message Node {
@@ -3565,6 +3604,16 @@ message PodExecOptions {
 message PodIP {
   // IP is the IP address assigned to the pod
   optional string ip = 1;
+
+  // PodNetworkName is name of the PodNetwork the IP belongs to
+  //
+  // +optional
+  optional string podNetwork = 2;
+
+  // InterfaceName is name of the network interface used for this attachment
+  //
+  // +optional
+  optional string interfaceName = 3;
 }
 
 // PodList is a list of Pods.
@@ -4136,6 +4185,11 @@ message PodSpec {
   // +featureGate=DynamicResourceAllocation
   // +optional
   repeated PodResourceClaim resourceClaims = 39;
+
+  // Networks is a list of PodNetworks that will be attached to the Pod.
+  //
+  // +optional
+  repeated Network networks = 40;
 }
 
 // PodStatus represents information about the status of a pod. Status may trail the actual

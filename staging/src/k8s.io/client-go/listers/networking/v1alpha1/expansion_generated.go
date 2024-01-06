@@ -22,6 +22,18 @@ package v1alpha1
 // IPAddressLister.
 type IPAddressListerExpansion interface{}
 
+// PodNetworkListerExpansion allows custom methods to be added to
+// PodNetworkLister.
+type PodNetworkListerExpansion interface{}
+
+// PodNetworkAttachmentListerExpansion allows custom methods to be added to
+// PodNetworkAttachmentLister.
+type PodNetworkAttachmentListerExpansion interface{}
+
+// PodNetworkAttachmentNamespaceListerExpansion allows custom methods to be added to
+// PodNetworkAttachmentNamespaceLister.
+type PodNetworkAttachmentNamespaceListerExpansion interface{}
+
 // ServiceCIDRListerExpansion allows custom methods to be added to
 // ServiceCIDRLister.
 type ServiceCIDRListerExpansion interface{}

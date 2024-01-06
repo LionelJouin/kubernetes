@@ -1767,6 +1767,15 @@
               "resourceClaimTemplateName": "resourceClaimTemplateNameValue"
             }
           }
+        ],
+        "networks": [
+          {
+            "podNetworkName": "podNetworkNameValue",
+            "podNetworkAttachmentName": "podNetworkAttachmentNameValue",
+            "interfaceName": "interfaceNameValue",
+            "isDefaultGW4": true,
+            "isDefaultGW6": true
+          }
         ]
       }
     },
