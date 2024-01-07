@@ -569,6 +569,13 @@ const (
 	// Enables the dynamic configuration of Service IP ranges
 	MultiCIDRServiceAllocator featuregate.Feature = "MultiCIDRServiceAllocator"
 
+	// owner: @mskrocki
+	// kep: https://kep.k8s.io/3698
+	// alpha: v1.30
+	//
+	// Enables multiple network interfaces to be defined in Pods.
+	MultiNetwork featuregate.Feature = "MultiNetwork"
+
 	// owner: @jsafrane
 	// kep: https://kep.k8s.io/3756
 	// alpha: v1.25 (as part of SELinuxMountReadWriteOncePod)
@@ -1131,6 +1138,8 @@ var defaultKubernetesFeatureGates = map[featuregate.Feature]featuregate.FeatureS
 	MinimizeIPTablesRestore: {Default: true, PreRelease: featuregate.GA, LockToDefault: true}, // remove in 1.30
 
 	MultiCIDRServiceAllocator: {Default: false, PreRelease: featuregate.Alpha},
+
+	MultiNetwork: {Default: false, PreRelease: featuregate.Alpha},
 
 	NewVolumeManagerReconstruction: {Default: true, PreRelease: featuregate.Beta},
 

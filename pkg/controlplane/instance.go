@@ -82,6 +82,7 @@ import (
 	"k8s.io/kubernetes/pkg/controlplane/apiserver/options"
 	"k8s.io/kubernetes/pkg/controlplane/controller/apiserverleasegc"
 	"k8s.io/kubernetes/pkg/controlplane/controller/clusterauthenticationtrust"
+	"k8s.io/kubernetes/pkg/controlplane/controller/defaultpodnetwork"
 	"k8s.io/kubernetes/pkg/controlplane/controller/defaultservicecidr"
 	"k8s.io/kubernetes/pkg/controlplane/controller/kubernetesservice"
 	"k8s.io/kubernetes/pkg/controlplane/controller/legacytokentracking"
@@ -511,6 +512,16 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 		kubernetesServiceCtrl.Stop()
 		return nil
 	})
+
+	if utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		m.GenericAPIServer.AddPostStartHookOrDie("start-kubernetes-default-podnetwork-controller", func(hookContext genericapiserver.PostStartHookContext) error {
+			go defaultpodnetwork.NewController(
+				clientset,
+				c.ExtraConfig.VersionedInformers.Networking().V1alpha1().PodNetworks(),
+			).Run(hookContext.StopCh)
+			return nil
+		})
+	}
 
 	if utilfeature.DefaultFeatureGate.Enabled(features.MultiCIDRServiceAllocator) {
 		m.GenericAPIServer.AddPostStartHookOrDie("start-kubernetes-service-cidr-controller", func(hookContext genericapiserver.PostStartHookContext) error {
