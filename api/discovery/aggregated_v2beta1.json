@@ -877,6 +877,76 @@
               ]
             },
             {
+              "resource": "podnetworkattachments",
+              "responseKind": {
+                "group": "",
+                "kind": "PodNetworkAttachment",
+                "version": ""
+              },
+              "scope": "Namespaced",
+              "singularResource": "podnetworkattachment",
+              "subresources": [
+                {
+                  "responseKind": {
+                    "group": "",
+                    "kind": "PodNetworkAttachment",
+                    "version": ""
+                  },
+                  "subresource": "status",
+                  "verbs": [
+                    "get",
+                    "patch",
+                    "update"
+                  ]
+                }
+              ],
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ]
+            },
+            {
+              "resource": "podnetworks",
+              "responseKind": {
+                "group": "",
+                "kind": "PodNetwork",
+                "version": ""
+              },
+              "scope": "Cluster",
+              "singularResource": "podnetwork",
+              "subresources": [
+                {
+                  "responseKind": {
+                    "group": "",
+                    "kind": "PodNetwork",
+                    "version": ""
+                  },
+                  "subresource": "status",
+                  "verbs": [
+                    "get",
+                    "patch",
+                    "update"
+                  ]
+                }
+              ],
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ]
+            },
+            {
               "resource": "servicecidrs",
               "responseKind": {
                 "group": "",
