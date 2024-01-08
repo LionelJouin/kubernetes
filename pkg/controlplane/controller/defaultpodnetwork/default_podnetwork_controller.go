@@ -24,6 +24,7 @@ import (
 	networkingapiv1alpha1 "k8s.io/api/networking/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	networkingv1alpha1informers "k8s.io/client-go/informers/networking/v1alpha1"
@@ -36,27 +37,36 @@ import (
 
 const (
 	controllerName        = "kubernetes-default-podnetwork-controller"
-	DefaultPodNetworkName = "kubernetes"
+	DefaultPodNetworkName = "kubernetes" // todo: to be moved to api
 )
 
 // Controller ensure default podnetwork exist.
 type Controller struct {
 	client kubernetes.Interface
 
-	podNetworkLister  networkingv1alpha1listers.PodNetworkLister
-	podNetworksSynced cache.InformerSynced
+	podNetworkInformer cache.SharedIndexInformer
+	podNetworkLister   networkingv1alpha1listers.PodNetworkLister
+	podNetworksSynced  cache.InformerSynced
 
 	interval time.Duration
 }
 
 // NewController creates a new Controller to ensure default podnetwork exist.
-func NewController(clientset kubernetes.Interface, podNetworkInformer networkingv1alpha1informers.PodNetworkInformer) *Controller {
+func NewController(clientset kubernetes.Interface) *Controller {
 	c := &Controller{
-		client:            clientset,
-		podNetworkLister:  podNetworkInformer.Lister(),
-		podNetworksSynced: podNetworkInformer.Informer().HasSynced,
-		interval:          10 * time.Second,
+		client:   clientset,
+		interval: 10 * time.Second,
 	}
+
+	// instead of using the shared informers from the controlplane instance, we construct our own informer
+	// because we need such a small subset of the information available, only the kubernetes.default PodNetwork
+	c.podNetworkInformer = networkingv1alpha1informers.NewFilteredPodNetworkInformer(clientset, 12*time.Hour,
+		cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc},
+		func(options *metav1.ListOptions) {
+			options.FieldSelector = fields.OneTermEqualSelector("metadata.name", DefaultPodNetworkName).String()
+		})
+	c.podNetworkLister = networkingv1alpha1listers.NewPodNetworkLister(c.podNetworkInformer.GetIndexer())
+	c.podNetworksSynced = c.podNetworkInformer.HasSynced
 
 	return c
 }
@@ -68,6 +78,7 @@ func (c *Controller) Run(stopCh <-chan struct{}) {
 
 	klog.Infof("Starting %s", controllerName)
 
+	go c.podNetworkInformer.Run(stopCh)
 	if !cache.WaitForCacheSync(stopCh, c.podNetworksSynced) {
 		utilruntime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
 		return

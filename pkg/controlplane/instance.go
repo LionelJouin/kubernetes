@@ -517,7 +517,6 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 		m.GenericAPIServer.AddPostStartHookOrDie("start-kubernetes-default-podnetwork-controller", func(hookContext genericapiserver.PostStartHookContext) error {
 			go defaultpodnetwork.NewController(
 				clientset,
-				c.ExtraConfig.VersionedInformers.Networking().V1alpha1().PodNetworks(),
 			).Run(hookContext.StopCh)
 			return nil
 		})

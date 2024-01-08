@@ -74,7 +74,7 @@ func (podNetworkAttachmentStrategy) PrepareForUpdate(ctx context.Context, obj, o
 	_, _ = newPodNetworkAttachment, oldPodNetworkAttachment
 }
 
-// Validate validates a new PodNetwork.
+// Validate validates a new podNetworkAttachment.
 func (podNetworkAttachmentStrategy) Validate(ctx context.Context, obj runtime.Object) field.ErrorList {
 	podNetworkAttachment := obj.(*networking.PodNetworkAttachment)
 	err := validation.ValidatePodNetworkAttachment(podNetworkAttachment)
@@ -85,7 +85,7 @@ func (podNetworkAttachmentStrategy) Validate(ctx context.Context, obj runtime.Ob
 func (podNetworkAttachmentStrategy) Canonicalize(obj runtime.Object) {
 }
 
-// AllowCreateOnUpdate is false for PodNetwork; this means POST is needed to create one.
+// AllowCreateOnUpdate is false for podNetworkAttachment; this means POST is needed to create one.
 func (podNetworkAttachmentStrategy) AllowCreateOnUpdate() bool {
 	return false
 }

@@ -47,6 +47,7 @@ import (
 	podshelper "k8s.io/kubernetes/pkg/apis/core/pods"
 	v1helper "k8s.io/kubernetes/pkg/apis/core/v1/helper"
 	v1qos "k8s.io/kubernetes/pkg/apis/core/v1/helper/qos"
+	"k8s.io/kubernetes/pkg/controlplane/controller/defaultpodnetwork"
 	"k8s.io/kubernetes/pkg/features"
 	"k8s.io/kubernetes/pkg/fieldpath"
 	"k8s.io/kubernetes/pkg/kubelet/cm"
@@ -1847,13 +1848,64 @@ func (kl *Kubelet) convertStatusToAPIStatus(pod *v1.Pod, podStatus *kubecontaine
 	podIPs := make([]string, len(podStatus.IPs))
 	copy(podIPs, podStatus.IPs)
 
-	// make podIPs order match node IP family preference #97979
-	podIPs = kl.sortPodIPs(podIPs)
-	for _, ip := range podIPs {
-		apiPodStatus.PodIPs = append(apiPodStatus.PodIPs, v1.PodIP{IP: ip})
-	}
-	if len(apiPodStatus.PodIPs) > 0 {
-		apiPodStatus.PodIP = apiPodStatus.PodIPs[0].IP
+	if utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		// The default podIPs is handled as before and the other podIPs
+		// are added by the external providers of the networks.
+
+		// How the default interface name for the default kubernetes network could be retrieved?
+		defaultInterfaceName := ""
+		for _, network := range pod.Spec.Networks {
+			if network.PodNetworkName == defaultpodnetwork.DefaultPodNetworkName {
+				defaultInterfaceName = network.InterfaceName
+				break
+			}
+		}
+
+		podNetworkName := defaultpodnetwork.DefaultPodNetworkName
+		if kubecontainer.IsHostNetworkPod(pod) {
+			podNetworkName = ""
+		}
+
+		// make podIPs order match node IP family preference #97979
+		podIPs = kl.sortPodIPs(podIPs)
+		for _, ip := range podIPs {
+			apiPodStatus.PodIPs = append(apiPodStatus.PodIPs, v1.PodIP{
+				IP:             ip,
+				PodNetworkName: podNetworkName,
+				InterfaceName:  defaultInterfaceName,
+			})
+		}
+		if len(apiPodStatus.PodIPs) > 0 {
+			apiPodStatus.PodIP = podIPs[0]
+		}
+
+		// Old PodIPs that are not managed by Kubernetes must be kept.
+		if !kubecontainer.IsHostNetworkPod(pod) {
+			podIPsMap := map[v1.PodIP]struct{}{}
+			for _, podIP := range pod.Status.PodIPs {
+				if podIP.PodNetworkName == podNetworkName {
+					continue
+				}
+				apiPodStatus.PodIPs = append(apiPodStatus.PodIPs, podIP)
+				podIPsMap[podIP] = struct{}{}
+			}
+			for _, podIP := range oldPodStatus.PodIPs {
+				_, exists := podIPsMap[podIP]
+				if podIP.PodNetworkName == podNetworkName || exists {
+					continue
+				}
+				apiPodStatus.PodIPs = append(apiPodStatus.PodIPs, podIP)
+			}
+		}
+	} else {
+		// make podIPs order match node IP family preference #97979
+		podIPs = kl.sortPodIPs(podIPs)
+		for _, ip := range podIPs {
+			apiPodStatus.PodIPs = append(apiPodStatus.PodIPs, v1.PodIP{IP: ip})
+		}
+		if len(apiPodStatus.PodIPs) > 0 {
+			apiPodStatus.PodIP = apiPodStatus.PodIPs[0].IP
+		}
 	}
 
 	// set status for Pods created on versions of kube older than 1.6

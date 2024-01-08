@@ -4032,32 +4032,49 @@ func validatePodIPs(pod *core.Pod) field.ErrorList {
 		}
 	}
 
-	// if we have more than one Pod.PodIP then
-	// - validate for dual stack
-	// - validate for duplication
-	if len(pod.Status.PodIPs) > 1 {
-		podIPs := make([]string, 0, len(pod.Status.PodIPs))
-		for _, podIP := range pod.Status.PodIPs {
-			podIPs = append(podIPs, podIP.IP)
-		}
-
-		dualStack, err := netutils.IsDualStackIPStrings(podIPs)
-		if err != nil {
-			allErrs = append(allErrs, field.InternalError(podIPsField, fmt.Errorf("failed to check for dual stack with error:%v", err)))
-		}
-
-		// We only support one from each IP family (i.e. max two IPs in this list).
-		if !dualStack || len(podIPs) > 2 {
-			allErrs = append(allErrs, field.Invalid(podIPsField, pod.Status.PodIPs, "may specify no more than one IP for each IP family"))
-		}
-
-		// There should be no duplicates in list of Pod.PodIPs
-		seen := sets.Set[string]{} // := make(map[string]int)
-		for i, podIP := range pod.Status.PodIPs {
-			if seen.Has(podIP.IP) {
-				allErrs = append(allErrs, field.Duplicate(podIPsField.Index(i), podIP))
+	// Using multi-network, PodIPs can contains any number of PodIP
+	if !utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		// if we have more than one Pod.PodIP then
+		// - validate for dual stack
+		// - validate for duplication
+		if len(pod.Status.PodIPs) > 1 {
+			podIPs := make([]string, 0, len(pod.Status.PodIPs))
+			for _, podIP := range pod.Status.PodIPs {
+				podIPs = append(podIPs, podIP.IP)
 			}
-			seen.Insert(podIP.IP)
+
+			dualStack, err := netutils.IsDualStackIPStrings(podIPs)
+			if err != nil {
+				allErrs = append(allErrs, field.InternalError(podIPsField, fmt.Errorf("failed to check for dual stack with error:%v", err)))
+			}
+
+			// We only support one from each IP family (i.e. max two IPs in this list).
+			if !dualStack || len(podIPs) > 2 {
+				allErrs = append(allErrs, field.Invalid(podIPsField, pod.Status.PodIPs, "may specify no more than one IP for each IP family"))
+			}
+
+			// There should be no duplicates in list of Pod.PodIPs
+			seen := sets.Set[string]{} // := make(map[string]int)
+			for i, podIP := range pod.Status.PodIPs {
+				if seen.Has(podIP.IP) {
+					allErrs = append(allErrs, field.Duplicate(podIPsField.Index(i), podIP))
+				}
+				seen.Insert(podIP.IP)
+			}
+		}
+	} else {
+		if !pod.Spec.SecurityContext.HostNetwork {
+			// Checks the PodIPs exist in Spec.Networks
+			networks := map[string]struct{}{}
+			for _, network := range pod.Spec.Networks {
+				networks[network.PodNetworkName] = struct{}{}
+			}
+
+			for _, podIP := range pod.Status.PodIPs {
+				if _, exists := networks[podIP.PodNetworkName]; !exists {
+					allErrs = append(allErrs, field.Invalid(podIPsField, pod.Status.PodIPs, "PodNetworkName must be existing in Spec.networks"))
+				}
+			}
 		}
 	}
 
