@@ -29,4 +29,5 @@ type Features struct {
 	EnablePodDisruptionConditions                bool
 	EnableInPlacePodVerticalScaling              bool
 	EnableSidecarContainers                      bool
+	EnableMultiNetworks                          bool
 }
