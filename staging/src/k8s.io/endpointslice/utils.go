@@ -28,8 +28,11 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/apimachinery/pkg/util/sets"
+	utilfeature "k8s.io/apiserver/pkg/util/feature"
 	endpointutil "k8s.io/endpointslice/util"
 	"k8s.io/klog/v2"
+	"k8s.io/kubernetes/pkg/controlplane/controller/defaultpodnetwork"
+	"k8s.io/kubernetes/pkg/features"
 	utilnet "k8s.io/utils/net"
 )
 
@@ -41,7 +44,7 @@ func podToEndpoint(pod *v1.Pod, node *v1.Node, service *v1.Service, addressType 
 	// publishNotReadyAddresses was set.
 	ready := service.Spec.PublishNotReadyAddresses || (serving && !terminating)
 	ep := discovery.Endpoint{
-		Addresses: getEndpointAddresses(pod.Status, service, addressType),
+		Addresses: getEndpointAddresses(pod, service, addressType),
 		Conditions: discovery.EndpointConditions{
 			Ready:       &ready,
 			Serving:     &serving,
@@ -105,10 +108,18 @@ func getEndpointPorts(logger klog.Logger, service *v1.Service, pod *v1.Pod) []di
 }
 
 // getEndpointAddresses returns a list of addresses generated from a pod status.
-func getEndpointAddresses(podStatus v1.PodStatus, service *v1.Service, addressType discovery.AddressType) []string {
+func getEndpointAddresses(pod *v1.Pod, service *v1.Service, addressType discovery.AddressType) []string {
 	addresses := []string{}
 
-	for _, podIP := range podStatus.PodIPs {
+	podNetworkName := ""
+	if !pod.Spec.HostNetwork && utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		podNetworkName = defaultpodnetwork.DefaultPodNetworkName
+	}
+
+	for _, podIP := range pod.Status.PodIPs {
+		if podIP.PodNetworkName != podNetworkName {
+			continue
+		}
 		isIPv6PodIP := utilnet.IsIPv6String(podIP.IP)
 		if isIPv6PodIP && addressType == discovery.AddressTypeIPv6 {
 			addresses = append(addresses, podIP.IP)

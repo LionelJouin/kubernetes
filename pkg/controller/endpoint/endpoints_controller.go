@@ -30,6 +30,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
+	utilfeature "k8s.io/apiserver/pkg/util/feature"
 	coreinformers "k8s.io/client-go/informers/core/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -46,6 +47,8 @@ import (
 	api "k8s.io/kubernetes/pkg/apis/core"
 	helper "k8s.io/kubernetes/pkg/apis/core/v1/helper"
 	"k8s.io/kubernetes/pkg/controller"
+	"k8s.io/kubernetes/pkg/controlplane/controller/defaultpodnetwork"
+	"k8s.io/kubernetes/pkg/features"
 	utillabels "k8s.io/kubernetes/pkg/util/labels"
 	utilnet "k8s.io/utils/net"
 )
@@ -235,9 +238,15 @@ func podToEndpointAddressForService(svc *v1.Service, pod *v1.Pod) (*v1.EndpointA
 		}
 	}
 
+	podNetworkName := ""
+	if !pod.Spec.HostNetwork && utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		podNetworkName = defaultpodnetwork.DefaultPodNetworkName
+	}
+
 	// find an ip that matches the family
 	for _, podIP := range pod.Status.PodIPs {
-		if (ipFamily == v1.IPv6Protocol) == utilnet.IsIPv6String(podIP.IP) {
+		if (ipFamily == v1.IPv6Protocol) == utilnet.IsIPv6String(podIP.IP) &&
+			podIP.PodNetworkName == podNetworkName {
 			endpointIP = podIP.IP
 			break
 		}

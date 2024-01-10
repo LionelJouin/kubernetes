@@ -31,8 +31,11 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/sets"
+	utilfeature "k8s.io/apiserver/pkg/util/feature"
 	v1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/kubernetes/pkg/controlplane/controller/defaultpodnetwork"
+	"k8s.io/kubernetes/pkg/features"
 )
 
 // semanticIgnoreResourceVersion does semantic deep equality checks for objects
@@ -100,6 +103,21 @@ func ShouldPodBeInEndpoints(pod *v1.Pod, includeTerminating bool) bool {
 	}
 
 	if len(pod.Status.PodIP) == 0 && len(pod.Status.PodIPs) == 0 {
+		return false
+	}
+
+	podNetworkName := ""
+	if !pod.Spec.HostNetwork && utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		podNetworkName = defaultpodnetwork.DefaultPodNetworkName
+	}
+
+	connectedToDefaultPodNetwork := false
+	for _, podIP := range pod.Status.PodIPs {
+		if podIP.PodNetworkName == podNetworkName {
+			connectedToDefaultPodNetwork = true
+		}
+	}
+	if !connectedToDefaultPodNetwork {
 		return false
 	}
 
