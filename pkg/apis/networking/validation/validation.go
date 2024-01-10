@@ -783,3 +783,69 @@ func ValidateServiceCIDRStatusUpdate(update, old *networking.ServiceCIDR) field.
 	allErrs := apivalidation.ValidateObjectMetaUpdate(&update.ObjectMeta, &old.ObjectMeta, field.NewPath("metadata"))
 	return allErrs
 }
+
+// ValidatePodNetworkName validates that the given name can be used as an
+// PodNetwork name.
+var ValidatePodNetworkName = apimachineryvalidation.NameIsDNSSubdomain
+
+// ValidatePodNetwork validates a PodNetwork.
+func ValidatePodNetwork(pn *networking.PodNetwork) field.ErrorList {
+	allErrs := apivalidation.ValidateObjectMeta(&pn.ObjectMeta, false, ValidatePodNetworkName, field.NewPath("metadata"))
+	return allErrs
+}
+
+// ValidatePodNetworkUpdate tests if an update to a PodNetwork is valid.
+func ValidatePodNetworkUpdate(update, old *networking.PodNetwork) field.ErrorList {
+	var allErrs field.ErrorList
+	allErrs = append(allErrs, apivalidation.ValidateObjectMetaUpdate(&update.ObjectMeta, &old.ObjectMeta, field.NewPath("metadata"))...)
+	allErrs = append(allErrs, validatePodNetworkUpdateSpec(&update.Spec, &old.Spec, field.NewPath("spec"))...)
+	return allErrs
+}
+
+func validatePodNetworkUpdateSpec(update, old *networking.PodNetworkSpec, fldPath *field.Path) field.ErrorList {
+	var allErrs field.ErrorList
+
+	allErrs = append(allErrs, apivalidation.ValidateImmutableField(update.ParametersRefs, old.ParametersRefs, fldPath.Child("parametersRefs"))...)
+	allErrs = append(allErrs, apivalidation.ValidateImmutableField(update.Provider, old.Provider, fldPath.Child("provider"))...)
+
+	return allErrs
+}
+
+// ValidatePodNetworkStatusUpdate tests if if an update to a PodNetwork Status is valid.
+func ValidatePodNetworkStatusUpdate(update, old *networking.PodNetwork) field.ErrorList {
+	allErrs := apivalidation.ValidateObjectMetaUpdate(&update.ObjectMeta, &old.ObjectMeta, field.NewPath("metadata"))
+	return allErrs
+}
+
+// ValidatePodNetworkAttachmentName validates that the given name can be used as an
+// PodNetworkAttachment name.
+var ValidatePodNetworkAttachmentName = apimachineryvalidation.NameIsDNSSubdomain
+
+// ValidatePodNetworkAttachment validates a PodNetworkAttachment.
+func ValidatePodNetworkAttachment(pn *networking.PodNetworkAttachment) field.ErrorList {
+	allErrs := apivalidation.ValidateObjectMeta(&pn.ObjectMeta, false, ValidatePodNetworkAttachmentName, field.NewPath("metadata"))
+	return allErrs
+}
+
+// ValidatePodNetworkAttachmentUpdate tests if an update to a PodNetworkAttachment is valid.
+func ValidatePodNetworkAttachmentUpdate(update, old *networking.PodNetworkAttachment) field.ErrorList {
+	var allErrs field.ErrorList
+	allErrs = append(allErrs, apivalidation.ValidateObjectMetaUpdate(&update.ObjectMeta, &old.ObjectMeta, field.NewPath("metadata"))...)
+	allErrs = append(allErrs, validatePodNetworkAttachmentUpdateSpec(&update.Spec, &old.Spec, field.NewPath("spec"))...)
+	return allErrs
+}
+
+func validatePodNetworkAttachmentUpdateSpec(update, old *networking.PodNetworkAttachmentSpec, fldPath *field.Path) field.ErrorList {
+	var allErrs field.ErrorList
+
+	allErrs = append(allErrs, apivalidation.ValidateImmutableField(update.PodNetworkName, old.PodNetworkName, fldPath.Child("podNetworkName"))...)
+	allErrs = append(allErrs, apivalidation.ValidateImmutableField(update.ParametersRefs, old.ParametersRefs, fldPath.Child("parametersRefs"))...)
+
+	return allErrs
+}
+
+// ValidatePodNetworkAttachmentStatusUpdate tests if if an update to a PodNetworkAttachment Status is valid.
+func ValidatePodNetworkAttachmentStatusUpdate(update, old *networking.PodNetworkAttachment) field.ErrorList {
+	allErrs := apivalidation.ValidateObjectMetaUpdate(&update.ObjectMeta, &old.ObjectMeta, field.NewPath("metadata"))
+	return allErrs
+}

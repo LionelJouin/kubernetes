@@ -29,6 +29,8 @@ import (
 	ingressclassstore "k8s.io/kubernetes/pkg/registry/networking/ingressclass/storage"
 	ipaddressstore "k8s.io/kubernetes/pkg/registry/networking/ipaddress/storage"
 	networkpolicystore "k8s.io/kubernetes/pkg/registry/networking/networkpolicy/storage"
+	podnetworkstore "k8s.io/kubernetes/pkg/registry/networking/podnetwork/storage"
+	podnetworkattachmentstore "k8s.io/kubernetes/pkg/registry/networking/podnetworkattachment/storage"
 	servicecidrstore "k8s.io/kubernetes/pkg/registry/networking/servicecidr/storage"
 )
 
@@ -108,6 +110,26 @@ func (p RESTStorageProvider) v1alpha1Storage(apiResourceConfigSource serverstora
 		}
 		storage[resource] = serviceCIDRStorage
 		storage[resource+"/status"] = serviceCIDRStatusStorage
+	}
+
+	// podnetwork
+	if resource := "podnetworks"; apiResourceConfigSource.ResourceEnabled(networkingapiv1alpha1.SchemeGroupVersion.WithResource(resource)) {
+		podNetworkStorage, podNetworkStatusStorage, err := podnetworkstore.NewREST(restOptionsGetter)
+		if err != nil {
+			return storage, err
+		}
+		storage[resource] = podNetworkStorage
+		storage[resource+"/status"] = podNetworkStatusStorage
+	}
+
+	// podnetworkattachments
+	if resource := "podnetworkattachments"; apiResourceConfigSource.ResourceEnabled(networkingapiv1alpha1.SchemeGroupVersion.WithResource(resource)) {
+		podNetworkAttachmentStorage, podNetworkAttachmentStatusStorage, err := podnetworkattachmentstore.NewREST(restOptionsGetter)
+		if err != nil {
+			return storage, err
+		}
+		storage[resource] = podNetworkAttachmentStorage
+		storage[resource+"/status"] = podNetworkAttachmentStatusStorage
 	}
 
 	return storage, nil
