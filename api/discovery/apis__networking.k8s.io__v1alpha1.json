@@ -24,6 +24,62 @@
       ]
     },
     {
+      "kind": "PodNetworkAttachment",
+      "name": "podnetworkattachments",
+      "namespaced": true,
+      "singularName": "podnetworkattachment",
+      "storageVersionHash": "05fYfwnPTrQ=",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ]
+    },
+    {
+      "kind": "PodNetworkAttachment",
+      "name": "podnetworkattachments/status",
+      "namespaced": true,
+      "singularName": "",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
+    },
+    {
+      "kind": "PodNetwork",
+      "name": "podnetworks",
+      "namespaced": false,
+      "singularName": "podnetwork",
+      "storageVersionHash": "XQwlj1wGiY0=",
+      "verbs": [
+        "create",
+        "delete",
+        "deletecollection",
+        "get",
+        "list",
+        "patch",
+        "update",
+        "watch"
+      ]
+    },
+    {
+      "kind": "PodNetwork",
+      "name": "podnetworks/status",
+      "namespaced": false,
+      "singularName": "",
+      "verbs": [
+        "get",
+        "patch",
+        "update"
+      ]
+    },
+    {
       "kind": "ServiceCIDR",
       "name": "servicecidrs",
       "namespaced": false,
