@@ -56,6 +56,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&IPAddressList{},
 		&ServiceCIDR{},
 		&ServiceCIDRList{},
+		&PodNetwork{},
+		&PodNetworkList{},
+		&PodNetworkAttachment{},
+		&PodNetworkAttachmentList{},
 	)
 	return nil
 }

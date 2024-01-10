@@ -692,3 +692,140 @@ type ServiceCIDRList struct {
 	// items is the list of ServiceCIDRs.
 	Items []ServiceCIDR
 }
+
+// +genclient
+// +genclient:nonNamespaced
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// PodNetwork represents a logical network in Kubernetes Cluster.
+type PodNetwork struct {
+	metav1.TypeMeta
+	metav1.ObjectMeta
+
+	Spec   PodNetworkSpec
+	Status PodNetworkStatus
+}
+
+// PodNetworkSpec contains the specifications for podNetwork object
+type PodNetworkSpec struct {
+
+	// Enabled is used to administratively enable/disable a PodNetwork.
+	// When set to false, PodNetwork Ready condition will be set to False.
+	// Defaults to True.
+	//
+	// +optional
+	Enabled bool
+
+	// ParametersRefs points to the vendor or implementation specific parameters
+	// objects for the PodNetwork.
+	//
+	// +optional
+	ParametersRefs []ParametersRef
+
+	// Provider specifies the provider implementing this PodNetwork.
+	//
+	// +optional
+	Provider string
+}
+
+// ParametersRef points to a custom resource containing additional
+// parameters for thePodNetwork.
+type ParametersRef struct {
+	// Group is the API group of k8s resource e.g. k8s.cni.cncf.io
+	Group string
+
+	// Kind is the API name of k8s resource e.g. network-attachment-definitions
+	Kind string
+
+	// Name of the resource.
+	Name string
+
+	// Namespace of the resource.
+	// +optional
+	Namespace string
+}
+
+// PodNetworkStatus contains the status information related to the PodNetwork.
+type PodNetworkStatus struct {
+	// Conditions describe the current conditions of the PodNetwork.
+	//
+	// Known condition types are:
+	// * "Ready"
+	// * "ParamsReady"
+	//
+	// +optional
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// PodNetworkList is a list of PodNetwork objects.
+type PodNetworkList struct {
+	metav1.TypeMeta
+
+	// Standard list metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	metav1.ListMeta
+
+	// items is a list of schema objects.
+	Items []PodNetwork
+}
+
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// PodNetworkAttachment provides optional pod-level configuration of PodNetwork.
+type PodNetworkAttachment struct {
+	metav1.TypeMeta
+	metav1.ObjectMeta
+
+	Spec   PodNetworkAttachmentSpec
+	Status PodNetworkAttachmentStatus
+}
+
+// PodNetworkAttachmentSpec is the specification for the PodNetworkAttachment resource.
+type PodNetworkAttachmentSpec struct {
+	// PodNetworkName refers to a PodNetwork object that this PodNetworkAttachment is
+	// connected to.
+	//
+	// +required
+	PodNetworkName string
+
+	// ParametersRefs points to the vendor or implementation specific parameters
+	// object for the PodNetworkAttachment.
+	//
+	// +optional
+	ParametersRefs []ParametersRef
+}
+
+// PodNetworkAttachmentStatus is the status for the PodNetworkAttachment resource.
+type PodNetworkAttachmentStatus struct {
+	// Conditions describe the current conditions of the PodNetworkAttachment.
+	//
+	// Known condition types are:
+	// * "Ready"
+	// * "ParamsReady"
+	//
+	// +optional
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// PodNetworkAttachmentList contains a list of PodNetworkAttachment.
+type PodNetworkAttachmentList struct {
+	metav1.TypeMeta
+
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	metav1.ListMeta
+
+	// items is the list of PodNetworkAttachments.
+	Items []PodNetworkAttachment
+}
