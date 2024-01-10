@@ -103,6 +103,8 @@ func ShouldPodBeInEndpoints(pod *v1.Pod, includeTerminating bool) bool {
 		return false
 	}
 
+	// todo: check if default pod network exists
+
 	if !includeTerminating && pod.DeletionTimestamp != nil {
 		return false
 	}

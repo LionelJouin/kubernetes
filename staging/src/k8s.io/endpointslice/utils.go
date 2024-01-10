@@ -108,6 +108,7 @@ func getEndpointPorts(logger klog.Logger, service *v1.Service, pod *v1.Pod) []di
 func getEndpointAddresses(podStatus v1.PodStatus, service *v1.Service, addressType discovery.AddressType) []string {
 	addresses := []string{}
 
+	// todo: fetch only default network IPs
 	for _, podIP := range podStatus.PodIPs {
 		isIPv6PodIP := utilnet.IsIPv6String(podIP.IP)
 		if isIPv6PodIP && addressType == discovery.AddressTypeIPv6 {

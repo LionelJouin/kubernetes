@@ -46,6 +46,7 @@ import (
 	api "k8s.io/kubernetes/pkg/apis/core"
 	helper "k8s.io/kubernetes/pkg/apis/core/v1/helper"
 	"k8s.io/kubernetes/pkg/controller"
+	"k8s.io/kubernetes/pkg/controlplane/controller/defaultpodnetwork"
 	utillabels "k8s.io/kubernetes/pkg/util/labels"
 	utilnet "k8s.io/utils/net"
 )
@@ -235,9 +236,15 @@ func podToEndpointAddressForService(svc *v1.Service, pod *v1.Pod) (*v1.EndpointA
 		}
 	}
 
+	podNetworkName := defaultpodnetwork.DefaultPodNetworkName
+	if pod.Spec.HostNetwork {
+		podNetworkName = ""
+	}
+
 	// find an ip that matches the family
 	for _, podIP := range pod.Status.PodIPs {
-		if (ipFamily == v1.IPv6Protocol) == utilnet.IsIPv6String(podIP.IP) {
+		if (ipFamily == v1.IPv6Protocol) == utilnet.IsIPv6String(podIP.IP) &&
+			podIP.PodNetworkName == podNetworkName {
 			endpointIP = podIP.IP
 			break
 		}
