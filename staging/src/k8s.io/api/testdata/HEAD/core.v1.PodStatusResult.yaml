@@ -183,7 +183,9 @@ status:
   phase: phaseValue
   podIP: podIPValue
   podIPs:
-  - ip: ipValue
+  - interfaceName: interfaceNameValue
+    ip: ipValue
+    podNetwork: podNetworkValue
   qosClass: qosClassValue
   reason: reasonValue
   resize: resizeValue

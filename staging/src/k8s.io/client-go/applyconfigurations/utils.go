@@ -749,6 +749,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &applyconfigurationscorev1.NamespaceSpecApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("NamespaceStatus"):
 		return &applyconfigurationscorev1.NamespaceStatusApplyConfiguration{}
+	case corev1.SchemeGroupVersion.WithKind("Network"):
+		return &applyconfigurationscorev1.NetworkApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("NFSVolumeSource"):
 		return &applyconfigurationscorev1.NFSVolumeSourceApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("Node"):
@@ -1349,8 +1351,22 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &applyconfigurationsnetworkingv1alpha1.IPAddressApplyConfiguration{}
 	case networkingv1alpha1.SchemeGroupVersion.WithKind("IPAddressSpec"):
 		return &applyconfigurationsnetworkingv1alpha1.IPAddressSpecApplyConfiguration{}
+	case networkingv1alpha1.SchemeGroupVersion.WithKind("ParametersRef"):
+		return &applyconfigurationsnetworkingv1alpha1.ParametersRefApplyConfiguration{}
 	case networkingv1alpha1.SchemeGroupVersion.WithKind("ParentReference"):
 		return &applyconfigurationsnetworkingv1alpha1.ParentReferenceApplyConfiguration{}
+	case networkingv1alpha1.SchemeGroupVersion.WithKind("PodNetwork"):
+		return &applyconfigurationsnetworkingv1alpha1.PodNetworkApplyConfiguration{}
+	case networkingv1alpha1.SchemeGroupVersion.WithKind("PodNetworkAttachment"):
+		return &applyconfigurationsnetworkingv1alpha1.PodNetworkAttachmentApplyConfiguration{}
+	case networkingv1alpha1.SchemeGroupVersion.WithKind("PodNetworkAttachmentSpec"):
+		return &applyconfigurationsnetworkingv1alpha1.PodNetworkAttachmentSpecApplyConfiguration{}
+	case networkingv1alpha1.SchemeGroupVersion.WithKind("PodNetworkAttachmentStatus"):
+		return &applyconfigurationsnetworkingv1alpha1.PodNetworkAttachmentStatusApplyConfiguration{}
+	case networkingv1alpha1.SchemeGroupVersion.WithKind("PodNetworkSpec"):
+		return &applyconfigurationsnetworkingv1alpha1.PodNetworkSpecApplyConfiguration{}
+	case networkingv1alpha1.SchemeGroupVersion.WithKind("PodNetworkStatus"):
+		return &applyconfigurationsnetworkingv1alpha1.PodNetworkStatusApplyConfiguration{}
 	case networkingv1alpha1.SchemeGroupVersion.WithKind("ServiceCIDR"):
 		return &applyconfigurationsnetworkingv1alpha1.ServiceCIDRApplyConfiguration{}
 	case networkingv1alpha1.SchemeGroupVersion.WithKind("ServiceCIDRSpec"):

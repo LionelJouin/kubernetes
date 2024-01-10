@@ -68,6 +68,16 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.ParametersRef)(nil), (*networking.ParametersRef)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ParametersRef_To_networking_ParametersRef(a.(*v1alpha1.ParametersRef), b.(*networking.ParametersRef), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.ParametersRef)(nil), (*v1alpha1.ParametersRef)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_ParametersRef_To_v1alpha1_ParametersRef(a.(*networking.ParametersRef), b.(*v1alpha1.ParametersRef), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*v1alpha1.ParentReference)(nil), (*networking.ParentReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1alpha1_ParentReference_To_networking_ParentReference(a.(*v1alpha1.ParentReference), b.(*networking.ParentReference), scope)
 	}); err != nil {
@@ -75,6 +85,86 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*networking.ParentReference)(nil), (*v1alpha1.ParentReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_networking_ParentReference_To_v1alpha1_ParentReference(a.(*networking.ParentReference), b.(*v1alpha1.ParentReference), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetwork)(nil), (*networking.PodNetwork)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetwork_To_networking_PodNetwork(a.(*v1alpha1.PodNetwork), b.(*networking.PodNetwork), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetwork)(nil), (*v1alpha1.PodNetwork)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetwork_To_v1alpha1_PodNetwork(a.(*networking.PodNetwork), b.(*v1alpha1.PodNetwork), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetworkAttachment)(nil), (*networking.PodNetworkAttachment)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetworkAttachment_To_networking_PodNetworkAttachment(a.(*v1alpha1.PodNetworkAttachment), b.(*networking.PodNetworkAttachment), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetworkAttachment)(nil), (*v1alpha1.PodNetworkAttachment)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetworkAttachment_To_v1alpha1_PodNetworkAttachment(a.(*networking.PodNetworkAttachment), b.(*v1alpha1.PodNetworkAttachment), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetworkAttachmentList)(nil), (*networking.PodNetworkAttachmentList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetworkAttachmentList_To_networking_PodNetworkAttachmentList(a.(*v1alpha1.PodNetworkAttachmentList), b.(*networking.PodNetworkAttachmentList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetworkAttachmentList)(nil), (*v1alpha1.PodNetworkAttachmentList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetworkAttachmentList_To_v1alpha1_PodNetworkAttachmentList(a.(*networking.PodNetworkAttachmentList), b.(*v1alpha1.PodNetworkAttachmentList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetworkAttachmentSpec)(nil), (*networking.PodNetworkAttachmentSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetworkAttachmentSpec_To_networking_PodNetworkAttachmentSpec(a.(*v1alpha1.PodNetworkAttachmentSpec), b.(*networking.PodNetworkAttachmentSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetworkAttachmentSpec)(nil), (*v1alpha1.PodNetworkAttachmentSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetworkAttachmentSpec_To_v1alpha1_PodNetworkAttachmentSpec(a.(*networking.PodNetworkAttachmentSpec), b.(*v1alpha1.PodNetworkAttachmentSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetworkAttachmentStatus)(nil), (*networking.PodNetworkAttachmentStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetworkAttachmentStatus_To_networking_PodNetworkAttachmentStatus(a.(*v1alpha1.PodNetworkAttachmentStatus), b.(*networking.PodNetworkAttachmentStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetworkAttachmentStatus)(nil), (*v1alpha1.PodNetworkAttachmentStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetworkAttachmentStatus_To_v1alpha1_PodNetworkAttachmentStatus(a.(*networking.PodNetworkAttachmentStatus), b.(*v1alpha1.PodNetworkAttachmentStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetworkList)(nil), (*networking.PodNetworkList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetworkList_To_networking_PodNetworkList(a.(*v1alpha1.PodNetworkList), b.(*networking.PodNetworkList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetworkList)(nil), (*v1alpha1.PodNetworkList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetworkList_To_v1alpha1_PodNetworkList(a.(*networking.PodNetworkList), b.(*v1alpha1.PodNetworkList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetworkSpec)(nil), (*networking.PodNetworkSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetworkSpec_To_networking_PodNetworkSpec(a.(*v1alpha1.PodNetworkSpec), b.(*networking.PodNetworkSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetworkSpec)(nil), (*v1alpha1.PodNetworkSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetworkSpec_To_v1alpha1_PodNetworkSpec(a.(*networking.PodNetworkSpec), b.(*v1alpha1.PodNetworkSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*v1alpha1.PodNetworkStatus)(nil), (*networking.PodNetworkStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_PodNetworkStatus_To_networking_PodNetworkStatus(a.(*v1alpha1.PodNetworkStatus), b.(*networking.PodNetworkStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*networking.PodNetworkStatus)(nil), (*v1alpha1.PodNetworkStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_networking_PodNetworkStatus_To_v1alpha1_PodNetworkStatus(a.(*networking.PodNetworkStatus), b.(*v1alpha1.PodNetworkStatus), scope)
 	}); err != nil {
 		return err
 	}
@@ -189,6 +279,32 @@ func Convert_networking_IPAddressSpec_To_v1alpha1_IPAddressSpec(in *networking.I
 	return autoConvert_networking_IPAddressSpec_To_v1alpha1_IPAddressSpec(in, out, s)
 }
 
+func autoConvert_v1alpha1_ParametersRef_To_networking_ParametersRef(in *v1alpha1.ParametersRef, out *networking.ParametersRef, s conversion.Scope) error {
+	out.Group = in.Group
+	out.Kind = in.Kind
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_v1alpha1_ParametersRef_To_networking_ParametersRef is an autogenerated conversion function.
+func Convert_v1alpha1_ParametersRef_To_networking_ParametersRef(in *v1alpha1.ParametersRef, out *networking.ParametersRef, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ParametersRef_To_networking_ParametersRef(in, out, s)
+}
+
+func autoConvert_networking_ParametersRef_To_v1alpha1_ParametersRef(in *networking.ParametersRef, out *v1alpha1.ParametersRef, s conversion.Scope) error {
+	out.Group = in.Group
+	out.Kind = in.Kind
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_networking_ParametersRef_To_v1alpha1_ParametersRef is an autogenerated conversion function.
+func Convert_networking_ParametersRef_To_v1alpha1_ParametersRef(in *networking.ParametersRef, out *v1alpha1.ParametersRef, s conversion.Scope) error {
+	return autoConvert_networking_ParametersRef_To_v1alpha1_ParametersRef(in, out, s)
+}
+
 func autoConvert_v1alpha1_ParentReference_To_networking_ParentReference(in *v1alpha1.ParentReference, out *networking.ParentReference, s conversion.Scope) error {
 	out.Group = in.Group
 	out.Resource = in.Resource
@@ -213,6 +329,200 @@ func autoConvert_networking_ParentReference_To_v1alpha1_ParentReference(in *netw
 // Convert_networking_ParentReference_To_v1alpha1_ParentReference is an autogenerated conversion function.
 func Convert_networking_ParentReference_To_v1alpha1_ParentReference(in *networking.ParentReference, out *v1alpha1.ParentReference, s conversion.Scope) error {
 	return autoConvert_networking_ParentReference_To_v1alpha1_ParentReference(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetwork_To_networking_PodNetwork(in *v1alpha1.PodNetwork, out *networking.PodNetwork, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_PodNetworkSpec_To_networking_PodNetworkSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_PodNetworkStatus_To_networking_PodNetworkStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_PodNetwork_To_networking_PodNetwork is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetwork_To_networking_PodNetwork(in *v1alpha1.PodNetwork, out *networking.PodNetwork, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetwork_To_networking_PodNetwork(in, out, s)
+}
+
+func autoConvert_networking_PodNetwork_To_v1alpha1_PodNetwork(in *networking.PodNetwork, out *v1alpha1.PodNetwork, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_networking_PodNetworkSpec_To_v1alpha1_PodNetworkSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_networking_PodNetworkStatus_To_v1alpha1_PodNetworkStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_networking_PodNetwork_To_v1alpha1_PodNetwork is an autogenerated conversion function.
+func Convert_networking_PodNetwork_To_v1alpha1_PodNetwork(in *networking.PodNetwork, out *v1alpha1.PodNetwork, s conversion.Scope) error {
+	return autoConvert_networking_PodNetwork_To_v1alpha1_PodNetwork(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetworkAttachment_To_networking_PodNetworkAttachment(in *v1alpha1.PodNetworkAttachment, out *networking.PodNetworkAttachment, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_PodNetworkAttachmentSpec_To_networking_PodNetworkAttachmentSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_PodNetworkAttachmentStatus_To_networking_PodNetworkAttachmentStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_PodNetworkAttachment_To_networking_PodNetworkAttachment is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetworkAttachment_To_networking_PodNetworkAttachment(in *v1alpha1.PodNetworkAttachment, out *networking.PodNetworkAttachment, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetworkAttachment_To_networking_PodNetworkAttachment(in, out, s)
+}
+
+func autoConvert_networking_PodNetworkAttachment_To_v1alpha1_PodNetworkAttachment(in *networking.PodNetworkAttachment, out *v1alpha1.PodNetworkAttachment, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_networking_PodNetworkAttachmentSpec_To_v1alpha1_PodNetworkAttachmentSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_networking_PodNetworkAttachmentStatus_To_v1alpha1_PodNetworkAttachmentStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_networking_PodNetworkAttachment_To_v1alpha1_PodNetworkAttachment is an autogenerated conversion function.
+func Convert_networking_PodNetworkAttachment_To_v1alpha1_PodNetworkAttachment(in *networking.PodNetworkAttachment, out *v1alpha1.PodNetworkAttachment, s conversion.Scope) error {
+	return autoConvert_networking_PodNetworkAttachment_To_v1alpha1_PodNetworkAttachment(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetworkAttachmentList_To_networking_PodNetworkAttachmentList(in *v1alpha1.PodNetworkAttachmentList, out *networking.PodNetworkAttachmentList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]networking.PodNetworkAttachment)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1alpha1_PodNetworkAttachmentList_To_networking_PodNetworkAttachmentList is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetworkAttachmentList_To_networking_PodNetworkAttachmentList(in *v1alpha1.PodNetworkAttachmentList, out *networking.PodNetworkAttachmentList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetworkAttachmentList_To_networking_PodNetworkAttachmentList(in, out, s)
+}
+
+func autoConvert_networking_PodNetworkAttachmentList_To_v1alpha1_PodNetworkAttachmentList(in *networking.PodNetworkAttachmentList, out *v1alpha1.PodNetworkAttachmentList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]v1alpha1.PodNetworkAttachment)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_networking_PodNetworkAttachmentList_To_v1alpha1_PodNetworkAttachmentList is an autogenerated conversion function.
+func Convert_networking_PodNetworkAttachmentList_To_v1alpha1_PodNetworkAttachmentList(in *networking.PodNetworkAttachmentList, out *v1alpha1.PodNetworkAttachmentList, s conversion.Scope) error {
+	return autoConvert_networking_PodNetworkAttachmentList_To_v1alpha1_PodNetworkAttachmentList(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetworkAttachmentSpec_To_networking_PodNetworkAttachmentSpec(in *v1alpha1.PodNetworkAttachmentSpec, out *networking.PodNetworkAttachmentSpec, s conversion.Scope) error {
+	out.PodNetworkName = in.PodNetworkName
+	out.ParametersRefs = *(*[]networking.ParametersRef)(unsafe.Pointer(&in.ParametersRefs))
+	return nil
+}
+
+// Convert_v1alpha1_PodNetworkAttachmentSpec_To_networking_PodNetworkAttachmentSpec is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetworkAttachmentSpec_To_networking_PodNetworkAttachmentSpec(in *v1alpha1.PodNetworkAttachmentSpec, out *networking.PodNetworkAttachmentSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetworkAttachmentSpec_To_networking_PodNetworkAttachmentSpec(in, out, s)
+}
+
+func autoConvert_networking_PodNetworkAttachmentSpec_To_v1alpha1_PodNetworkAttachmentSpec(in *networking.PodNetworkAttachmentSpec, out *v1alpha1.PodNetworkAttachmentSpec, s conversion.Scope) error {
+	out.PodNetworkName = in.PodNetworkName
+	out.ParametersRefs = *(*[]v1alpha1.ParametersRef)(unsafe.Pointer(&in.ParametersRefs))
+	return nil
+}
+
+// Convert_networking_PodNetworkAttachmentSpec_To_v1alpha1_PodNetworkAttachmentSpec is an autogenerated conversion function.
+func Convert_networking_PodNetworkAttachmentSpec_To_v1alpha1_PodNetworkAttachmentSpec(in *networking.PodNetworkAttachmentSpec, out *v1alpha1.PodNetworkAttachmentSpec, s conversion.Scope) error {
+	return autoConvert_networking_PodNetworkAttachmentSpec_To_v1alpha1_PodNetworkAttachmentSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetworkAttachmentStatus_To_networking_PodNetworkAttachmentStatus(in *v1alpha1.PodNetworkAttachmentStatus, out *networking.PodNetworkAttachmentStatus, s conversion.Scope) error {
+	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
+	return nil
+}
+
+// Convert_v1alpha1_PodNetworkAttachmentStatus_To_networking_PodNetworkAttachmentStatus is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetworkAttachmentStatus_To_networking_PodNetworkAttachmentStatus(in *v1alpha1.PodNetworkAttachmentStatus, out *networking.PodNetworkAttachmentStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetworkAttachmentStatus_To_networking_PodNetworkAttachmentStatus(in, out, s)
+}
+
+func autoConvert_networking_PodNetworkAttachmentStatus_To_v1alpha1_PodNetworkAttachmentStatus(in *networking.PodNetworkAttachmentStatus, out *v1alpha1.PodNetworkAttachmentStatus, s conversion.Scope) error {
+	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
+	return nil
+}
+
+// Convert_networking_PodNetworkAttachmentStatus_To_v1alpha1_PodNetworkAttachmentStatus is an autogenerated conversion function.
+func Convert_networking_PodNetworkAttachmentStatus_To_v1alpha1_PodNetworkAttachmentStatus(in *networking.PodNetworkAttachmentStatus, out *v1alpha1.PodNetworkAttachmentStatus, s conversion.Scope) error {
+	return autoConvert_networking_PodNetworkAttachmentStatus_To_v1alpha1_PodNetworkAttachmentStatus(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetworkList_To_networking_PodNetworkList(in *v1alpha1.PodNetworkList, out *networking.PodNetworkList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]networking.PodNetwork)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1alpha1_PodNetworkList_To_networking_PodNetworkList is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetworkList_To_networking_PodNetworkList(in *v1alpha1.PodNetworkList, out *networking.PodNetworkList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetworkList_To_networking_PodNetworkList(in, out, s)
+}
+
+func autoConvert_networking_PodNetworkList_To_v1alpha1_PodNetworkList(in *networking.PodNetworkList, out *v1alpha1.PodNetworkList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]v1alpha1.PodNetwork)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_networking_PodNetworkList_To_v1alpha1_PodNetworkList is an autogenerated conversion function.
+func Convert_networking_PodNetworkList_To_v1alpha1_PodNetworkList(in *networking.PodNetworkList, out *v1alpha1.PodNetworkList, s conversion.Scope) error {
+	return autoConvert_networking_PodNetworkList_To_v1alpha1_PodNetworkList(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetworkSpec_To_networking_PodNetworkSpec(in *v1alpha1.PodNetworkSpec, out *networking.PodNetworkSpec, s conversion.Scope) error {
+	out.Enabled = in.Enabled
+	out.ParametersRefs = *(*[]networking.ParametersRef)(unsafe.Pointer(&in.ParametersRefs))
+	out.Provider = in.Provider
+	return nil
+}
+
+// Convert_v1alpha1_PodNetworkSpec_To_networking_PodNetworkSpec is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetworkSpec_To_networking_PodNetworkSpec(in *v1alpha1.PodNetworkSpec, out *networking.PodNetworkSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetworkSpec_To_networking_PodNetworkSpec(in, out, s)
+}
+
+func autoConvert_networking_PodNetworkSpec_To_v1alpha1_PodNetworkSpec(in *networking.PodNetworkSpec, out *v1alpha1.PodNetworkSpec, s conversion.Scope) error {
+	out.Enabled = in.Enabled
+	out.ParametersRefs = *(*[]v1alpha1.ParametersRef)(unsafe.Pointer(&in.ParametersRefs))
+	out.Provider = in.Provider
+	return nil
+}
+
+// Convert_networking_PodNetworkSpec_To_v1alpha1_PodNetworkSpec is an autogenerated conversion function.
+func Convert_networking_PodNetworkSpec_To_v1alpha1_PodNetworkSpec(in *networking.PodNetworkSpec, out *v1alpha1.PodNetworkSpec, s conversion.Scope) error {
+	return autoConvert_networking_PodNetworkSpec_To_v1alpha1_PodNetworkSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_PodNetworkStatus_To_networking_PodNetworkStatus(in *v1alpha1.PodNetworkStatus, out *networking.PodNetworkStatus, s conversion.Scope) error {
+	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
+	return nil
+}
+
+// Convert_v1alpha1_PodNetworkStatus_To_networking_PodNetworkStatus is an autogenerated conversion function.
+func Convert_v1alpha1_PodNetworkStatus_To_networking_PodNetworkStatus(in *v1alpha1.PodNetworkStatus, out *networking.PodNetworkStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_PodNetworkStatus_To_networking_PodNetworkStatus(in, out, s)
+}
+
+func autoConvert_networking_PodNetworkStatus_To_v1alpha1_PodNetworkStatus(in *networking.PodNetworkStatus, out *v1alpha1.PodNetworkStatus, s conversion.Scope) error {
+	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
+	return nil
+}
+
+// Convert_networking_PodNetworkStatus_To_v1alpha1_PodNetworkStatus is an autogenerated conversion function.
+func Convert_networking_PodNetworkStatus_To_v1alpha1_PodNetworkStatus(in *networking.PodNetworkStatus, out *v1alpha1.PodNetworkStatus, s conversion.Scope) error {
+	return autoConvert_networking_PodNetworkStatus_To_v1alpha1_PodNetworkStatus(in, out, s)
 }
 
 func autoConvert_v1alpha1_ServiceCIDR_To_networking_ServiceCIDR(in *v1alpha1.ServiceCIDR, out *networking.ServiceCIDR, s conversion.Scope) error {

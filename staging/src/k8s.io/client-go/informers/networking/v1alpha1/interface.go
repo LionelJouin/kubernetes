@@ -26,6 +26,10 @@ import (
 type Interface interface {
 	// IPAddresses returns a IPAddressInformer.
 	IPAddresses() IPAddressInformer
+	// PodNetworks returns a PodNetworkInformer.
+	PodNetworks() PodNetworkInformer
+	// PodNetworkAttachments returns a PodNetworkAttachmentInformer.
+	PodNetworkAttachments() PodNetworkAttachmentInformer
 	// ServiceCIDRs returns a ServiceCIDRInformer.
 	ServiceCIDRs() ServiceCIDRInformer
 }
@@ -44,6 +48,16 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 // IPAddresses returns a IPAddressInformer.
 func (v *version) IPAddresses() IPAddressInformer {
 	return &iPAddressInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// PodNetworks returns a PodNetworkInformer.
+func (v *version) PodNetworks() PodNetworkInformer {
+	return &podNetworkInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// PodNetworkAttachments returns a PodNetworkAttachmentInformer.
+func (v *version) PodNetworkAttachments() PodNetworkAttachmentInformer {
+	return &podNetworkAttachmentInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ServiceCIDRs returns a ServiceCIDRInformer.

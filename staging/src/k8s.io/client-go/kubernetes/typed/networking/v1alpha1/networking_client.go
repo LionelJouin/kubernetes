@@ -29,6 +29,8 @@ import (
 type NetworkingV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	IPAddressesGetter
+	PodNetworksGetter
+	PodNetworkAttachmentsGetter
 	ServiceCIDRsGetter
 }
 
@@ -39,6 +41,14 @@ type NetworkingV1alpha1Client struct {
 
 func (c *NetworkingV1alpha1Client) IPAddresses() IPAddressInterface {
 	return newIPAddresses(c)
+}
+
+func (c *NetworkingV1alpha1Client) PodNetworks() PodNetworkInterface {
+	return newPodNetworks(c)
+}
+
+func (c *NetworkingV1alpha1Client) PodNetworkAttachments(namespace string) PodNetworkAttachmentInterface {
+	return newPodNetworkAttachments(c, namespace)
 }
 
 func (c *NetworkingV1alpha1Client) ServiceCIDRs() ServiceCIDRInterface {

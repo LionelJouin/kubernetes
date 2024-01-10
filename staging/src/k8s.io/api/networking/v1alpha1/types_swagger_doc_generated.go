@@ -56,6 +56,18 @@ func (IPAddressSpec) SwaggerDoc() map[string]string {
 	return map_IPAddressSpec
 }
 
+var map_ParametersRef = map[string]string{
+	"":          "ParametersRef points to a custom resource containing additional parameters for thePodNetwork.",
+	"group":     "Group is the API group of k8s resource e.g. k8s.cni.cncf.io",
+	"kind":      "Kind is the API name of k8s resource e.g. network-attachment-definitions",
+	"name":      "Name of the resource.",
+	"namespace": "Namespace of the resource.",
+}
+
+func (ParametersRef) SwaggerDoc() map[string]string {
+	return map_ParametersRef
+}
+
 var map_ParentReference = map[string]string{
 	"":          "ParentReference describes a reference to a parent object.",
 	"group":     "Group is the group of the object being referenced.",
@@ -66,6 +78,87 @@ var map_ParentReference = map[string]string{
 
 func (ParentReference) SwaggerDoc() map[string]string {
 	return map_ParentReference
+}
+
+var map_PodNetwork = map[string]string{
+	"":         "PodNetwork represents a logical network in Kubernetes Cluster.",
+	"metadata": "Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+	"spec":     "Spec defines the behavior of a PodNetwork. https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status",
+	"status":   "Most recently observed status of the PodNetwork. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status",
+}
+
+func (PodNetwork) SwaggerDoc() map[string]string {
+	return map_PodNetwork
+}
+
+var map_PodNetworkAttachment = map[string]string{
+	"":         "PodNetworkAttachment provides optional pod-level configuration of PodNetwork.",
+	"metadata": "Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+	"spec":     "Spec defines the behavior of a PodNetworkAttachment. https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status",
+	"status":   "Most recently observed status of the PodNetworkAttachment. Populated by the system. Read-only. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status",
+}
+
+func (PodNetworkAttachment) SwaggerDoc() map[string]string {
+	return map_PodNetworkAttachment
+}
+
+var map_PodNetworkAttachmentList = map[string]string{
+	"":         "PodNetworkAttachmentList contains a list of PodNetworkAttachment.",
+	"metadata": "Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+	"items":    "items is the list of PodNetworkAttachments.",
+}
+
+func (PodNetworkAttachmentList) SwaggerDoc() map[string]string {
+	return map_PodNetworkAttachmentList
+}
+
+var map_PodNetworkAttachmentSpec = map[string]string{
+	"":               "PodNetworkAttachmentSpec is the specification for the PodNetworkAttachment resource.",
+	"podNetworkName": "PodNetworkName refers to a PodNetwork object that this PodNetworkAttachment is connected to.",
+	"parametersRefs": "ParametersRefs points to the vendor or implementation specific parameters object for the PodNetworkAttachment.",
+}
+
+func (PodNetworkAttachmentSpec) SwaggerDoc() map[string]string {
+	return map_PodNetworkAttachmentSpec
+}
+
+var map_PodNetworkAttachmentStatus = map[string]string{
+	"":           "PodNetworkAttachmentStatus is the status for the PodNetworkAttachment resource.",
+	"conditions": "Conditions describe the current conditions of the PodNetworkAttachment.\n\nKnown condition types are: * \"Ready\" * \"ParamsReady\"",
+}
+
+func (PodNetworkAttachmentStatus) SwaggerDoc() map[string]string {
+	return map_PodNetworkAttachmentStatus
+}
+
+var map_PodNetworkList = map[string]string{
+	"":         "PodNetworkList is a list of PodNetwork objects.",
+	"metadata": "Standard list metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+	"items":    "items is a list of schema objects.",
+}
+
+func (PodNetworkList) SwaggerDoc() map[string]string {
+	return map_PodNetworkList
+}
+
+var map_PodNetworkSpec = map[string]string{
+	"":               "PodNetworkSpec contains the specifications for podNetwork object",
+	"enabled":        "Enabled is used to administratively enable/disable a PodNetwork. When set to false, PodNetwork Ready condition will be set to False. Defaults to True.",
+	"parametersRefs": "ParametersRefs points to the vendor or implementation specific parameters objects for the PodNetwork.",
+	"provider":       "Provider specifies the provider implementing this PodNetwork.",
+}
+
+func (PodNetworkSpec) SwaggerDoc() map[string]string {
+	return map_PodNetworkSpec
+}
+
+var map_PodNetworkStatus = map[string]string{
+	"":           "PodNetworkStatus contains the status information related to the PodNetwork.",
+	"conditions": "Conditions describe the current conditions of the PodNetwork.\n\nKnown condition types are: * \"Ready\" * \"ParamsReady\"",
+}
+
+func (PodNetworkStatus) SwaggerDoc() map[string]string {
+	return map_PodNetworkStatus
 }
 
 var map_ServiceCIDR = map[string]string{
