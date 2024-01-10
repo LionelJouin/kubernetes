@@ -578,6 +578,12 @@ func ClusterRoles() []rbacv1.ClusterRole {
 			rbacv1helpers.NewRule(Read...).Groups(resourceGroup).Resources("podschedulingcontexts/status").RuleOrDie(),
 		)
 	}
+	// Needed for PodNetwork.
+	if utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		kubeSchedulerRules = append(kubeSchedulerRules,
+			rbacv1helpers.NewRule(Read...).Groups(networkingGroup).Resources("podnetworks").RuleOrDie(),
+		)
+	}
 	roles = append(roles, rbacv1.ClusterRole{
 		// a role to use for the kube-scheduler
 		ObjectMeta: metav1.ObjectMeta{Name: "system:kube-scheduler"},

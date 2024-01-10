@@ -31,6 +31,7 @@ import (
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/noderesources"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/nodeunschedulable"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/nodevolumelimits"
+	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/podnetwork"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/podtopologyspread"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/queuesort"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/schedulinggates"
@@ -55,6 +56,7 @@ func NewInTreeRegistry() runtime.Registry {
 		EnablePodDisruptionConditions:                feature.DefaultFeatureGate.Enabled(features.PodDisruptionConditions),
 		EnableInPlacePodVerticalScaling:              feature.DefaultFeatureGate.Enabled(features.InPlacePodVerticalScaling),
 		EnableSidecarContainers:                      feature.DefaultFeatureGate.Enabled(features.SidecarContainers),
+		EnableMultiNetworks:                          feature.DefaultFeatureGate.Enabled(features.MultiNetwork),
 	}
 
 	registry := runtime.Registry{
@@ -65,6 +67,7 @@ func NewInTreeRegistry() runtime.Registry {
 		nodeports.Name:                       nodeports.New,
 		nodeaffinity.Name:                    nodeaffinity.New,
 		podtopologyspread.Name:               runtime.FactoryAdapter(fts, podtopologyspread.New),
+		podnetwork.Name:                      runtime.FactoryAdapter(fts, podnetwork.New),
 		nodeunschedulable.Name:               nodeunschedulable.New,
 		noderesources.Name:                   runtime.FactoryAdapter(fts, noderesources.NewFit),
 		noderesources.BalancedAllocationName: runtime.FactoryAdapter(fts, noderesources.NewBalancedAllocation),

@@ -34,6 +34,7 @@ const (
 	CinderLimits                    = "CinderLimits"
 	EBSLimits                       = "EBSLimits"
 	GCEPDLimits                     = "GCEPDLimits"
+	PodNetwork                      = "PodNetwork"
 	PodTopologySpread               = "PodTopologySpread"
 	SchedulingGates                 = "SchedulingGates"
 	TaintToleration                 = "TaintToleration"

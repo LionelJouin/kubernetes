@@ -80,6 +80,9 @@ func applyFeatureGates(config *v1.Plugins) {
 			}
 		}
 	}
+	if utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		config.MultiPoint.Enabled = append(config.MultiPoint.Enabled, v1.Plugin{Name: names.PodNetwork})
+	}
 }
 
 // mergePlugins merges the custom set into the given default one, handling disabled sets.
