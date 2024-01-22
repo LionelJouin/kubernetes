@@ -154,6 +154,9 @@ type Manager interface {
 
 	// SetPodResizeStatus checkpoints the last resizing decision for the pod.
 	SetPodResizeStatus(podUID types.UID, resize v1.PodResizeStatus) error
+
+	// CheckNetworks verifies if all networks described in the pod spec are represented in the PodIPs at least once.
+	CheckNetworks(ctx context.Context, pod *v1.Pod) error
 }
 
 const syncPeriod = 10 * time.Second
@@ -1131,4 +1134,22 @@ func NeedToReconcilePodReadiness(pod *v1.Pod) bool {
 		return true
 	}
 	return false
+}
+
+// CheckNetworks verifies if all networks described in the pod spec are represented in the PodIPs at least once.
+func (m *manager) CheckNetworks(ctx context.Context, pod *v1.Pod) error {
+	networks := map[string]struct{}{}
+	for _, network := range pod.Spec.Networks {
+		networks[network.PodNetworkName] = struct{}{}
+	}
+
+	for _, podIP := range pod.Status.PodIPs {
+		delete(networks, podIP.PodNetworkName)
+	}
+
+	for network := range networks {
+		return fmt.Errorf("network '%s' is missing in PodIPs", network)
+	}
+
+	return nil
 }

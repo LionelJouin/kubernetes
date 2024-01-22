@@ -17,6 +17,8 @@ limitations under the License.
 package status
 
 import (
+	"context"
+
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/klog/v2"
@@ -87,6 +89,11 @@ func (m *fakeManager) SetPodAllocation(pod *v1.Pod) error {
 
 func (m *fakeManager) SetPodResizeStatus(podUID types.UID, resizeStatus v1.PodResizeStatus) error {
 	klog.InfoS("SetPodResizeStatus()")
+	return nil
+}
+
+func (m *fakeManager) CheckNetworks(ctx context.Context, pod *v1.Pod) error {
+	klog.InfoS("CheckNetworks()")
 	return nil
 }
 

@@ -1817,6 +1817,17 @@ func (kl *Kubelet) SyncPod(ctx context.Context, updateType kubetypes.SyncPodType
 		return false, fmt.Errorf("%s: %v", NetworkNotReadyErrorMsg, err)
 	}
 
+	if utilfeature.DefaultFeatureGate.Enabled(features.MultiNetwork) {
+		// Checks if all networks are attached
+		if err := kl.statusManager.CheckNetworks(ctx, pod); err != nil {
+			if !wait.Interrupted(err) {
+				kl.recorder.Eventf(pod, v1.EventTypeWarning, events.NetworkNotReady, "All networks are not yet attached", err)
+				klog.ErrorS(err, "All networks are not yet attached", "pod", klog.KObj(pod))
+			}
+			return false, err
+		}
+	}
+
 	// ensure the kubelet knows about referenced secrets or configmaps used by the pod
 	if !kl.podWorkers.IsPodTerminationRequested(pod.UID) {
 		if kl.secretManager != nil {
