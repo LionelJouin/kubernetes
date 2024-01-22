@@ -3823,6 +3823,50 @@ type PodSpec struct {
 	// +featureGate=DynamicResourceAllocation
 	// +optional
 	ResourceClaims []PodResourceClaim `json:"resourceClaims,omitempty" patchStrategy:"merge,retainKeys" patchMergeKey:"name" protobuf:"bytes,39,rep,name=resourceClaims"`
+
+	// Networks is a list of PodNetworks that will be attached to the Pod.
+	//
+	// +optional
+	Networks []Network `json:"networks,omitempty" protobuf:"bytes,40,opt,name=networks"`
+}
+
+// Network defines what PodNetwork to attach to the Pod.
+type Network struct {
+	// PodNetworkName is name of PodNetwork to attach
+	// Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set
+	//
+	// +optional
+	PodNetworkName string `json:"podNetworkName,omitempty" protobuf:"bytes,1,opt,name=podNetworkName"`
+
+	// PodNetworkAttachmentName is name of PodNetwork to attach
+	// Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set
+	//
+	// +optional
+	PodNetworkAttachmentName string `json:"podNetworkAttachmentName,omitempty" protobuf:"bytes,2,opt,name=podNetworkAttachmentName"`
+
+	// InterfaceName is the network interface name inside the Pod for this attachment.
+	// This field functionality is dependent on the implementation and its support
+	// for it.
+	// Examples: eth1 or net1
+	//
+	// +optional
+	InterfaceName string `json:"interfaceName,omitempty" protobuf:"bytes,3,opt,name=interfaceName"`
+
+	// IsDefaultGW4 is a flag indicating this PodNetwork will hold the IPv4 Default
+	// Gateway inside the Pod. Only one Network can have this flag set to True.
+	// This field functionality is dependent on the implementation and its support
+	// for it.
+	//
+	// +optional
+	IsDefaultGW4 bool `json:"isDefaultGW4,omitempty" protobuf:"bytes,4,opt,name=isDefaultGW4"`
+
+	// IsDefaultGW6 is a flag indicating this PodNetwork will hold the IPv6 Default
+	// Gateway inside the Pod. Only one Network can have this flag set to True.
+	// This field functionality is dependent on the implementation and its support
+	// for it.
+	//
+	// +optional
+	IsDefaultGW6 bool `json:"isDefaultGW6,omitempty" protobuf:"bytes,5,opt,name=isDefaultGW46"`
 }
 
 // PodResourceClaim references exactly one ResourceClaim through a ClaimSource.
@@ -4248,6 +4292,16 @@ type PodDNSConfigOption struct {
 type PodIP struct {
 	// IP is the IP address assigned to the pod
 	IP string `json:"ip,omitempty" protobuf:"bytes,1,opt,name=ip"`
+
+	// PodNetworkName is name of the PodNetwork the IP belongs to
+	//
+	// +optional
+	PodNetworkName string `json:"podNetwork" protobuf:"bytes,2,opt,name=podNetwork"`
+
+	// InterfaceName is name of the network interface used for this attachment
+	//
+	// +optional
+	InterfaceName string `json:"interfaceName,omitempty" protobuf:"bytes,3,opt,name=interfaceName"`
 }
 
 // HostIP represents a single IP address allocated to the host.

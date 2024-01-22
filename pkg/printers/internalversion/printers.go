@@ -998,6 +998,15 @@ func printPod(pod *api.Pod, options printers.GenerateOptions) ([]metav1.TableRow
 			}
 			readinessGates = fmt.Sprintf("%d/%d", trueConditions, len(pod.Spec.ReadinessGates))
 		}
+
+		networks := "<none>"
+		if len(pod.Spec.Networks) > 0 {
+			// loop through all networks and append them to the networks string
+			for i := range pod.Spec.Networks {
+				networks += pod.Spec.Networks[i].PodNetworkName + ", "
+			}
+		}
+
 		row.Cells = append(row.Cells, podIP, nodeName, nominatedNodeName, readinessGates)
 	}
 
