@@ -2919,6 +2919,32 @@
         ],
         "type": "object"
       },
+      "io.k8s.api.core.v1.Network": {
+        "description": "Network defines what PodNetwork to attach to the Pod.",
+        "properties": {
+          "interfaceName": {
+            "description": "InterfaceName is the network interface name inside the Pod for this attachment. This field functionality is dependent on the implementation and its support for it. Examples: eth1 or net1",
+            "type": "string"
+          },
+          "isDefaultGW4": {
+            "description": "IsDefaultGW4 is a flag indicating this PodNetwork will hold the IPv4 Default Gateway inside the Pod. Only one Network can have this flag set to True. This field functionality is dependent on the implementation and its support for it.",
+            "type": "boolean"
+          },
+          "isDefaultGW6": {
+            "description": "IsDefaultGW6 is a flag indicating this PodNetwork will hold the IPv6 Default Gateway inside the Pod. Only one Network can have this flag set to True. This field functionality is dependent on the implementation and its support for it.",
+            "type": "boolean"
+          },
+          "podNetworkAttachmentName": {
+            "description": "PodNetworkAttachmentName is name of PodNetwork to attach Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set",
+            "type": "string"
+          },
+          "podNetworkName": {
+            "description": "PodNetworkName is name of PodNetwork to attach Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "io.k8s.api.core.v1.NodeAffinity": {
         "description": "Node affinity is a group of node affinity scheduling rules.",
         "properties": {
@@ -3796,6 +3822,18 @@
             "x-kubernetes-list-type": "map",
             "x-kubernetes-patch-merge-key": "name",
             "x-kubernetes-patch-strategy": "merge"
+          },
+          "networks": {
+            "description": "Networks is a list of PodNetworks that will be attached to the Pod.",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/io.k8s.api.core.v1.Network"
+                }
+              ],
+              "default": {}
+            },
+            "type": "array"
           },
           "nodeName": {
             "description": "NodeName is a request to schedule this pod onto a specific node. If it is non-empty, the scheduler simply schedules this pod onto that node, assuming that it fits resource requirements.",

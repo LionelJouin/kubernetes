@@ -5671,6 +5671,24 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: phase
       type:
         scalar: string
+- name: io.k8s.api.core.v1.Network
+  map:
+    fields:
+    - name: interfaceName
+      type:
+        scalar: string
+    - name: isDefaultGW4
+      type:
+        scalar: boolean
+    - name: isDefaultGW6
+      type:
+        scalar: boolean
+    - name: podNetworkAttachmentName
+      type:
+        scalar: string
+    - name: podNetworkName
+      type:
+        scalar: string
 - name: io.k8s.api.core.v1.Node
   map:
     fields:
@@ -6409,9 +6427,16 @@ var schemaYAML = typed.YAMLObject(`types:
 - name: io.k8s.api.core.v1.PodIP
   map:
     fields:
+    - name: interfaceName
+      type:
+        scalar: string
     - name: ip
       type:
         scalar: string
+    - name: podNetwork
+      type:
+        scalar: string
+      default: ""
 - name: io.k8s.api.core.v1.PodOS
   map:
     fields:
@@ -6569,6 +6594,12 @@ var schemaYAML = typed.YAMLObject(`types:
           elementRelationship: associative
           keys:
           - name
+    - name: networks
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.api.core.v1.Network
+          elementRelationship: atomic
     - name: nodeName
       type:
         scalar: string

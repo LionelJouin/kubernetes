@@ -448,6 +448,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"k8s.io/api/core/v1.NamespaceList":                                                                      schema_k8sio_api_core_v1_NamespaceList(ref),
 		"k8s.io/api/core/v1.NamespaceSpec":                                                                      schema_k8sio_api_core_v1_NamespaceSpec(ref),
 		"k8s.io/api/core/v1.NamespaceStatus":                                                                    schema_k8sio_api_core_v1_NamespaceStatus(ref),
+		"k8s.io/api/core/v1.Network":                                                                            schema_k8sio_api_core_v1_Network(ref),
 		"k8s.io/api/core/v1.Node":                                                                               schema_k8sio_api_core_v1_Node(ref),
 		"k8s.io/api/core/v1.NodeAddress":                                                                        schema_k8sio_api_core_v1_NodeAddress(ref),
 		"k8s.io/api/core/v1.NodeAffinity":                                                                       schema_k8sio_api_core_v1_NodeAffinity(ref),
@@ -22634,6 +22635,54 @@ func schema_k8sio_api_core_v1_NamespaceStatus(ref common.ReferenceCallback) comm
 	}
 }
 
+func schema_k8sio_api_core_v1_Network(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Network defines what PodNetwork to attach to the Pod.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"podNetworkName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PodNetworkName is name of PodNetwork to attach Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"podNetworkAttachmentName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PodNetworkAttachmentName is name of PodNetwork to attach Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"interfaceName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InterfaceName is the network interface name inside the Pod for this attachment. This field functionality is dependent on the implementation and its support for it. Examples: eth1 or net1",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"isDefaultGW4": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IsDefaultGW4 is a flag indicating this PodNetwork will hold the IPv4 Default Gateway inside the Pod. Only one Network can have this flag set to True. This field functionality is dependent on the implementation and its support for it.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"isDefaultGW6": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IsDefaultGW6 is a flag indicating this PodNetwork will hold the IPv6 Default Gateway inside the Pod. Only one Network can have this flag set to True. This field functionality is dependent on the implementation and its support for it.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
 func schema_k8sio_api_core_v1_Node(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -25191,6 +25240,21 @@ func schema_k8sio_api_core_v1_PodIP(ref common.ReferenceCallback) common.OpenAPI
 							Format:      "",
 						},
 					},
+					"podNetwork": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PodNetworkName is name of the PodNetwork the IP belongs to",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"interfaceName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InterfaceName is name of the network interface used for this attachment",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 				},
 			},
 		},
@@ -26153,12 +26217,26 @@ func schema_k8sio_api_core_v1_PodSpec(ref common.ReferenceCallback) common.OpenA
 							},
 						},
 					},
+					"networks": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Networks is a list of PodNetworks that will be attached to the Pod.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/api/core/v1.Network"),
+									},
+								},
+							},
+						},
+					},
 				},
 				Required: []string{"containers"},
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.Container", "k8s.io/api/core/v1.EphemeralContainer", "k8s.io/api/core/v1.HostAlias", "k8s.io/api/core/v1.LocalObjectReference", "k8s.io/api/core/v1.PodDNSConfig", "k8s.io/api/core/v1.PodOS", "k8s.io/api/core/v1.PodReadinessGate", "k8s.io/api/core/v1.PodResourceClaim", "k8s.io/api/core/v1.PodSchedulingGate", "k8s.io/api/core/v1.PodSecurityContext", "k8s.io/api/core/v1.Toleration", "k8s.io/api/core/v1.TopologySpreadConstraint", "k8s.io/api/core/v1.Volume", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
+			"k8s.io/api/core/v1.Affinity", "k8s.io/api/core/v1.Container", "k8s.io/api/core/v1.EphemeralContainer", "k8s.io/api/core/v1.HostAlias", "k8s.io/api/core/v1.LocalObjectReference", "k8s.io/api/core/v1.Network", "k8s.io/api/core/v1.PodDNSConfig", "k8s.io/api/core/v1.PodOS", "k8s.io/api/core/v1.PodReadinessGate", "k8s.io/api/core/v1.PodResourceClaim", "k8s.io/api/core/v1.PodSchedulingGate", "k8s.io/api/core/v1.PodSecurityContext", "k8s.io/api/core/v1.Toleration", "k8s.io/api/core/v1.TopologySpreadConstraint", "k8s.io/api/core/v1.Volume", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
 	}
 }
 

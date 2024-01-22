@@ -64,6 +64,7 @@ type PodSpecApplyConfiguration struct {
 	HostUsers                     *bool                                        `json:"hostUsers,omitempty"`
 	SchedulingGates               []PodSchedulingGateApplyConfiguration        `json:"schedulingGates,omitempty"`
 	ResourceClaims                []PodResourceClaimApplyConfiguration         `json:"resourceClaims,omitempty"`
+	Networks                      []NetworkApplyConfiguration                  `json:"networks,omitempty"`
 }
 
 // PodSpecApplyConfiguration constructs an declarative configuration of the PodSpec type for use with
@@ -441,6 +442,19 @@ func (b *PodSpecApplyConfiguration) WithResourceClaims(values ...*PodResourceCla
 			panic("nil value passed to WithResourceClaims")
 		}
 		b.ResourceClaims = append(b.ResourceClaims, *values[i])
+	}
+	return b
+}
+
+// WithNetworks adds the given value to the Networks field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Networks field.
+func (b *PodSpecApplyConfiguration) WithNetworks(values ...*NetworkApplyConfiguration) *PodSpecApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithNetworks")
+		}
+		b.Networks = append(b.Networks, *values[i])
 	}
 	return b
 }

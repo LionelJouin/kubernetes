@@ -1109,6 +1109,19 @@ func (NamespaceStatus) SwaggerDoc() map[string]string {
 	return map_NamespaceStatus
 }
 
+var map_Network = map[string]string{
+	"":                         "Network defines what PodNetwork to attach to the Pod.",
+	"podNetworkName":           "PodNetworkName is name of PodNetwork to attach Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set",
+	"podNetworkAttachmentName": "PodNetworkAttachmentName is name of PodNetwork to attach Only one of: [PodNetworkName, PodNetworkAttachmentName] can be set",
+	"interfaceName":            "InterfaceName is the network interface name inside the Pod for this attachment. This field functionality is dependent on the implementation and its support for it. Examples: eth1 or net1",
+	"isDefaultGW4":             "IsDefaultGW4 is a flag indicating this PodNetwork will hold the IPv4 Default Gateway inside the Pod. Only one Network can have this flag set to True. This field functionality is dependent on the implementation and its support for it.",
+	"isDefaultGW6":             "IsDefaultGW6 is a flag indicating this PodNetwork will hold the IPv6 Default Gateway inside the Pod. Only one Network can have this flag set to True. This field functionality is dependent on the implementation and its support for it.",
+}
+
+func (Network) SwaggerDoc() map[string]string {
+	return map_Network
+}
+
 var map_Node = map[string]string{
 	"":         "Node is a worker node in Kubernetes. Each node will have a unique identifier in the cache (i.e. in etcd).",
 	"metadata": "Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
@@ -1602,8 +1615,10 @@ func (PodExecOptions) SwaggerDoc() map[string]string {
 }
 
 var map_PodIP = map[string]string{
-	"":   "PodIP represents a single IP address allocated to the pod.",
-	"ip": "IP is the IP address assigned to the pod",
+	"":              "PodIP represents a single IP address allocated to the pod.",
+	"ip":            "IP is the IP address assigned to the pod",
+	"podNetwork":    "PodNetworkName is name of the PodNetwork the IP belongs to",
+	"interfaceName": "InterfaceName is name of the network interface used for this attachment",
 }
 
 func (PodIP) SwaggerDoc() map[string]string {
@@ -1770,6 +1785,7 @@ var map_PodSpec = map[string]string{
 	"hostUsers":                     "Use the host's user namespace. Optional: Default to true. If set to true or not present, the pod will be run in the host user namespace, useful for when the pod needs a feature only available to the host user namespace, such as loading a kernel module with CAP_SYS_MODULE. When set to false, a new userns is created for the pod. Setting false is useful for mitigating container breakout vulnerabilities even allowing users to run their containers as root without actually having root privileges on the host. This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.",
 	"schedulingGates":               "SchedulingGates is an opaque list of values that if specified will block scheduling the pod. If schedulingGates is not empty, the pod will stay in the SchedulingGated state and the scheduler will not attempt to schedule the pod.\n\nSchedulingGates can only be set at pod creation time, and be removed only afterwards.\n\nThis is a beta feature enabled by the PodSchedulingReadiness feature gate.",
 	"resourceClaims":                "ResourceClaims defines which ResourceClaims must be allocated and reserved before the Pod is allowed to start. The resources will be made available to those containers which consume them by name.\n\nThis is an alpha field and requires enabling the DynamicResourceAllocation feature gate.\n\nThis field is immutable.",
+	"networks":                      "Networks is a list of PodNetworks that will be attached to the Pod.",
 }
 
 func (PodSpec) SwaggerDoc() map[string]string {

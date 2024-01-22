@@ -827,6 +827,12 @@ spec:
           subPath: subPathValue
           subPathExpr: subPathExprValue
         workingDir: workingDirValue
+      networks:
+      - interfaceName: interfaceNameValue
+        isDefaultGW4: true
+        isDefaultGW6: true
+        podNetworkAttachmentName: podNetworkAttachmentNameValue
+        podNetworkName: podNetworkNameValue
       nodeName: nodeNameValue
       nodeSelector:
         nodeSelectorKey: nodeSelectorValue

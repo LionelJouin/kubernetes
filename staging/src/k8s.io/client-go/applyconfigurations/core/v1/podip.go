@@ -21,7 +21,9 @@ package v1
 // PodIPApplyConfiguration represents an declarative configuration of the PodIP type for use
 // with apply.
 type PodIPApplyConfiguration struct {
-	IP *string `json:"ip,omitempty"`
+	IP             *string `json:"ip,omitempty"`
+	PodNetworkName *string `json:"podNetwork,omitempty"`
+	InterfaceName  *string `json:"interfaceName,omitempty"`
 }
 
 // PodIPApplyConfiguration constructs an declarative configuration of the PodIP type for use with
@@ -35,5 +37,21 @@ func PodIP() *PodIPApplyConfiguration {
 // If called multiple times, the IP field is set to the value of the last call.
 func (b *PodIPApplyConfiguration) WithIP(value string) *PodIPApplyConfiguration {
 	b.IP = &value
+	return b
+}
+
+// WithPodNetworkName sets the PodNetworkName field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the PodNetworkName field is set to the value of the last call.
+func (b *PodIPApplyConfiguration) WithPodNetworkName(value string) *PodIPApplyConfiguration {
+	b.PodNetworkName = &value
+	return b
+}
+
+// WithInterfaceName sets the InterfaceName field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the InterfaceName field is set to the value of the last call.
+func (b *PodIPApplyConfiguration) WithInterfaceName(value string) *PodIPApplyConfiguration {
+	b.InterfaceName = &value
 	return b
 }

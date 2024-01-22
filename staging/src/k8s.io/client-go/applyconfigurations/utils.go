@@ -749,6 +749,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &applyconfigurationscorev1.NamespaceSpecApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("NamespaceStatus"):
 		return &applyconfigurationscorev1.NamespaceStatusApplyConfiguration{}
+	case corev1.SchemeGroupVersion.WithKind("Network"):
+		return &applyconfigurationscorev1.NetworkApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("NFSVolumeSource"):
 		return &applyconfigurationscorev1.NFSVolumeSourceApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("Node"):
