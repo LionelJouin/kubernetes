@@ -1116,6 +1116,11 @@ func mergePodStatus(oldPodStatus, newPodStatus v1.PodStatus, couldHaveRunningCon
 		}
 	}
 
+	if len(newPodStatus.PodIPs) == 0 && newPodStatus.PodIP == "" {
+		newPodStatus.PodIP = oldPodStatus.PodIP
+		newPodStatus.PodIPs = oldPodStatus.PodIPs
+	}
+
 	return newPodStatus
 }
 

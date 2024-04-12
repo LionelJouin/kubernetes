@@ -56,10 +56,10 @@ func PodSandboxChanged(pod *v1.Pod, podStatus *kubecontainer.PodStatus) (bool, u
 	}
 
 	// Needs to create a new sandbox when the sandbox does not have an IP address.
-	if !kubecontainer.IsHostNetworkPod(pod) && sandboxStatus.Network != nil && sandboxStatus.Network.Ip == "" {
-		klog.V(2).InfoS("Sandbox for pod has no IP address. Need to start a new one", "pod", klog.KObj(pod))
-		return true, sandboxStatus.Metadata.Attempt + 1, sandboxStatus.Id
-	}
+	// if !kubecontainer.IsHostNetworkPod(pod) && sandboxStatus.Network != nil && sandboxStatus.Network.Ip == "" {
+	// 	klog.V(2).InfoS("Sandbox for pod has no IP address. Need to start a new one", "pod", klog.KObj(pod))
+	// 	return true, sandboxStatus.Metadata.Attempt + 1, sandboxStatus.Id
+	// }
 
 	return false, sandboxStatus.Metadata.Attempt, sandboxStatus.Id
 }

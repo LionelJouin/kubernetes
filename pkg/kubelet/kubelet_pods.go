@@ -1928,13 +1928,18 @@ func (kl *Kubelet) convertStatusToAPIStatus(pod *v1.Pod, podStatus *kubecontaine
 	podIPs := make([]string, len(podStatus.IPs))
 	copy(podIPs, podStatus.IPs)
 
-	// make podIPs order match node IP family preference #97979
-	podIPs = kl.sortPodIPs(podIPs)
-	for _, ip := range podIPs {
-		apiPodStatus.PodIPs = append(apiPodStatus.PodIPs, v1.PodIP{IP: ip})
-	}
-	if len(apiPodStatus.PodIPs) > 0 {
-		apiPodStatus.PodIP = apiPodStatus.PodIPs[0].IP
+	if kubecontainer.IsHostNetworkPod(pod) {
+		// make podIPs order match node IP family preference #97979
+		podIPs = kl.sortPodIPs(podIPs)
+		for _, ip := range podIPs {
+			apiPodStatus.PodIPs = append(apiPodStatus.PodIPs, v1.PodIP{IP: ip})
+		}
+		if len(apiPodStatus.PodIPs) > 0 {
+			apiPodStatus.PodIP = apiPodStatus.PodIPs[0].IP
+		}
+	} else {
+		apiPodStatus.PodIPs = oldPodStatus.PodIPs
+		apiPodStatus.PodIP = oldPodStatus.PodIP
 	}
 
 	// set status for Pods created on versions of kube older than 1.6

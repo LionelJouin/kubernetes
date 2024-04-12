@@ -45,6 +45,7 @@ import (
 	"k8s.io/kubernetes/plugin/pkg/admission/podnodeselector"
 	"k8s.io/kubernetes/plugin/pkg/admission/podtolerationrestriction"
 	podpriority "k8s.io/kubernetes/plugin/pkg/admission/priority"
+	"k8s.io/kubernetes/plugin/pkg/admission/resourceclaim"
 	"k8s.io/kubernetes/plugin/pkg/admission/runtimeclass"
 	"k8s.io/kubernetes/plugin/pkg/admission/security/podsecurity"
 	"k8s.io/kubernetes/plugin/pkg/admission/serviceaccount"
@@ -87,6 +88,7 @@ var AllOrderedPlugins = []string{
 	gc.PluginName,                           // OwnerReferencesPermissionEnforcement
 	resize.PluginName,                       // PersistentVolumeClaimResize
 	runtimeclass.PluginName,                 // RuntimeClass
+	resourceclaim.PluginName,                // ResourceClaim
 	certapproval.PluginName,                 // CertificateApproval
 	certsigning.PluginName,                  // CertificateSigning
 	ctbattest.PluginName,                    // ClusterTrustBundleAttest
@@ -128,6 +130,7 @@ func RegisterAllAdmissionPlugins(plugins *admission.Plugins) {
 	podtolerationrestriction.Register(plugins)
 	runtimeclass.Register(plugins)
 	resourcequota.Register(plugins)
+	resourceclaim.Register(plugins)
 	podsecurity.Register(plugins)
 	podpriority.Register(plugins)
 	serviceaccount.Register(plugins)
@@ -162,6 +165,7 @@ func DefaultOffAdmissionPlugins() sets.String {
 		certsubjectrestriction.PluginName,       // CertificateSubjectRestriction
 		defaultingressclass.PluginName,          // DefaultIngressClass
 		podsecurity.PluginName,                  // PodSecurity
+		resourceclaim.PluginName,                // ResourceClaim
 		validatingadmissionpolicy.PluginName,    // ValidatingAdmissionPolicy, only active when feature gate ValidatingAdmissionPolicy is enabled
 	)
 
