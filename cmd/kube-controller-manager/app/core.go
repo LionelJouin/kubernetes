@@ -486,10 +486,15 @@ func newEndpointsControllerDescriptor() *ControllerDescriptor {
 }
 
 func startEndpointsController(ctx context.Context, controllerContext ControllerContext, controllerName string) (controller.Interface, bool, error) {
+	svcInformer, err := newServiceInformerLabelledKubernetesController(controllerContext.InformerFactory)
+	if err != nil {
+		return nil, true, err
+	}
+
 	go endpointcontroller.NewEndpointController(
 		ctx,
 		controllerContext.InformerFactory.Core().V1().Pods(),
-		controllerContext.InformerFactory.Core().V1().Services(),
+		svcInformer,
 		controllerContext.InformerFactory.Core().V1().Endpoints(),
 		controllerContext.ClientBuilder.ClientOrDie("endpoint-controller"),
 		controllerContext.ComponentConfig.EndpointController.EndpointUpdatesBatchPeriod.Duration,

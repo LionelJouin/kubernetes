@@ -2317,6 +2317,60 @@ var _ = common.SIGDescribe("Services", func() {
 		framework.ExpectNoError(verifyServeHostnameServiceDown(ctx, cs, ns, svcHeadlessIP, servicePort))
 	})
 
+	ginkgo.It("should implement service.kubernetes.io/endpoint-controller-name", func(ctx context.Context) {
+		ns := f.Namespace.Name
+		numPods, _ := 3, defaultServeHostnameServicePort
+		serviceEndpoointNameLabels := map[string]string{"service.kubernetes.io/endpoint-controller-name": "foo-bar"}
+
+		// We will create 2 services to test creating services in both states and also dynamic updates
+		// svcDisabled: Created with the label, will always be disabled. We create this early and
+		//              test again late to make sure it never becomes available.
+		// svcToggled: Created without the label then the label is toggled verifying reachability at each step.
+
+		ginkgo.By("creating endpoint-disabled service in namespace " + ns)
+		svcDisabled := getServeHostnameService("service-endpoint-disabled")
+		svcDisabled.ObjectMeta.Labels = serviceEndpoointNameLabels
+		_, svcDisabledIP, err := StartServeHostnameService(ctx, cs, svcDisabled, ns, numPods)
+		framework.ExpectNoError(err, "failed to create replication controller with service: %s in the namespace: %s", svcDisabledIP, ns)
+
+		ginkgo.By("creating endpoint-toggled service in namespace " + ns)
+		svcToggled := getServeHostnameService("service-endpoint-toggled")
+		_, svcToggledIP, err := StartServeHostnameService(ctx, cs, svcToggled, ns, numPods)
+		framework.ExpectNoError(err, "failed to create replication controller with service: %s in the namespace: %s", svcToggledIP, ns)
+
+		jig := e2eservice.NewTestJig(cs, ns, svcToggled.ObjectMeta.Name)
+
+		ginkgo.By("verifying endpoint-toggled service has endpoints")
+		framework.ExpectNoError(validateEndpoints(ctx, cs, ns, svcToggled.ObjectMeta.Name))
+
+		ginkgo.By("verifying endpoint-disabled service has no endpoint")
+		framework.ExpectNoError(validateNoEndpoints(ctx, cs, ns, svcDisabled.ObjectMeta.Name))
+
+		ginkgo.By("adding endpoint-controller-name label to endpoint-toggled service")
+		_, err = jig.UpdateService(ctx, func(svc *v1.Service) {
+			svc.ObjectMeta.Labels = serviceEndpoointNameLabels
+		})
+		framework.ExpectNoError(err)
+
+		ginkgo.By("verifying endpoint-toggled service has no endpoint")
+		framework.ExpectNoError(validateNoEndpoints(ctx, cs, ns, svcDisabled.ObjectMeta.Name))
+
+		ginkgo.By("removing endpoint-controller-name annotation from endpoint-toggled service")
+		_, err = jig.UpdateService(ctx, func(svc *v1.Service) {
+			svc.ObjectMeta.Labels = nil
+		})
+		framework.ExpectNoError(err)
+
+		ginkgo.By("verifying endpoint-toggled service has endpoints")
+		err = wait.PollUntilContextTimeout(ctx, 1*time.Second, 10*time.Second, true, func(ctx context.Context) (bool, error) {
+			return validateEndpoints(ctx, cs, ns, svcToggled.ObjectMeta.Name) == nil, nil
+		})
+		framework.ExpectNoError(err, "timed out waiting for endpoint-toggled service to have endpoints")
+
+		ginkgo.By("verifying service-disabled has still no endpoints")
+		framework.ExpectNoError(validateNoEndpoints(ctx, cs, ns, svcDisabled.ObjectMeta.Name))
+	})
+
 	ginkgo.It("should be rejected when no endpoints exist", func(ctx context.Context) {
 		namespace := f.Namespace.Name
 		serviceName := "no-pods"
@@ -4438,4 +4492,27 @@ func validatePortsAndProtocols(ep, expectedEndpoints fullPortsByPodUID) error {
 		}
 	}
 	return nil
+}
+
+// validateNoEndpoints validates that the given service exists without any endpoints
+func validateNoEndpoints(ctx context.Context, c clientset.Interface, namespace, serviceName string) error {
+	ep, err := c.CoreV1().Endpoints(namespace).Get(ctx, serviceName, metav1.GetOptions{})
+	if err != nil && len(ep.Subsets) == 0 {
+		return nil
+	}
+	portsByPodUID := e2eendpoints.GetContainerPortsByPodUID(ep)
+	return fmt.Errorf("Unexpected endpoints: found %v, %v", portsByPodUID, err)
+}
+
+// validateNoEndpoints validates that the given service exists without any endpoints
+func validateEndpoints(ctx context.Context, c clientset.Interface, namespace, serviceName string) error {
+	ep, err := c.CoreV1().Endpoints(namespace).Get(ctx, serviceName, metav1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("Unexpected error: %v", err)
+	}
+
+	if len(ep.Subsets) > 0 {
+		return nil
+	}
+	return fmt.Errorf("Unexpected endpoints: no endpoints found")
 }
