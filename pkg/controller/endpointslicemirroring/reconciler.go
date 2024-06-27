@@ -19,15 +19,18 @@ package endpointslicemirroring
 import (
 	"context"
 	"fmt"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	discovery "k8s.io/api/discovery/v1"
 	apiequality "k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/record"
+	endpointslicerec "k8s.io/endpointslice/endpointslice"
 	endpointsliceutil "k8s.io/endpointslice/util"
 	"k8s.io/klog/v2"
 	endpointsv1 "k8s.io/kubernetes/pkg/api/v1/endpoints"
@@ -62,6 +65,33 @@ type reconciler struct {
 // EndpointSlices exist. It creates, updates, or deletes EndpointSlices to
 // ensure the desired set of addresses are represented by EndpointSlices.
 func (r *reconciler) reconcile(logger klog.Logger, endpoints *corev1.Endpoints, existingSlices []*discovery.EndpointSlice) error {
+	enable := true
+	if enable {
+		labelsAnnotationsFromEndpoints := endpointslicerec.LabelsAnnotationsFromEndpoints{Endpoints: endpoints}
+
+		rec := endpointslicerec.NewReconciler(
+			r.client,
+			r.endpointSliceTracker,
+			r.eventRecorder,
+			controllerName,
+			1000,
+		)
+
+		desiredEndpoints, supportedAddressesTypes := endpointslicerec.FromEndpoints(endpoints, r.maxEndpointsPerSubset)
+
+		return rec.Reconcile(
+			logger,
+			schema.GroupVersionKind{Version: "v1", Kind: "Endpoints"},
+			endpoints,
+			desiredEndpoints,
+			existingSlices,
+			supportedAddressesTypes,
+			nil,
+			labelsAnnotationsFromEndpoints.Set,
+			time.Time{},
+		)
+	}
+
 	// Calculate desired state.
 	d := newDesiredCalc()
 

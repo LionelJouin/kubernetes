@@ -1,5 +1,5 @@
 /*
-Copyright 2020 The Kubernetes Authors.
+Copyright 2024 The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,25 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package endpointslicemirroring
+package endpointslice
 
 import (
 	"context"
 	"strings"
 	"testing"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	discovery "k8s.io/api/discovery/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes/fake"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/component-base/metrics/testutil"
 	endpointsliceutil "k8s.io/endpointslice/util"
 	endpointsv1 "k8s.io/kubernetes/pkg/api/v1/endpoints"
-	"k8s.io/kubernetes/pkg/controller/endpointslicemirroring/metrics"
 	"k8s.io/kubernetes/test/utils/ktesting"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 )
 
 const defaultMaxEndpointsPerSubset = int32(1000)
@@ -85,7 +85,7 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -104,7 +104,7 @@ func TestReconcile(t *testing.T) {
 				Addresses: []corev1.EndpointAddress{{
 					IP:       "10.0.0.1",
 					Hostname: "pod-1",
-					NodeName: pointer.String("node-1"),
+					NodeName: ptr.To("node-1"),
 				}},
 			},
 			{
@@ -116,7 +116,7 @@ func TestReconcile(t *testing.T) {
 				Addresses: []corev1.EndpointAddress{{
 					IP:       "10.0.0.2",
 					Hostname: "pod-2",
-					NodeName: pointer.String("node-1"),
+					NodeName: ptr.To("node-1"),
 				}},
 			},
 		},
@@ -136,7 +136,7 @@ func TestReconcile(t *testing.T) {
 				Addresses: []corev1.EndpointAddress{{
 					IP:       "10.0.0.1",
 					Hostname: "pod-1",
-					NodeName: pointer.String("node-1"),
+					NodeName: ptr.To("node-1"),
 				}},
 			},
 			{
@@ -148,7 +148,7 @@ func TestReconcile(t *testing.T) {
 				Addresses: []corev1.EndpointAddress{{
 					IP:       "10.0.0.1",
 					Hostname: "pod-1",
-					NodeName: pointer.String("node-1"),
+					NodeName: ptr.To("node-1"),
 				}},
 			},
 		},
@@ -168,7 +168,7 @@ func TestReconcile(t *testing.T) {
 				Addresses: []corev1.EndpointAddress{{
 					IP:       "10.0.0.1",
 					Hostname: "pod-1",
-					NodeName: pointer.String("node-1"),
+					NodeName: ptr.To("node-1"),
 				}},
 			},
 			{
@@ -180,7 +180,7 @@ func TestReconcile(t *testing.T) {
 				Addresses: []corev1.EndpointAddress{{
 					IP:       "10.0.0.2",
 					Hostname: "pod-2",
-					NodeName: pointer.String("node-1"),
+					NodeName: ptr.To("node-1"),
 				}},
 			},
 		},
@@ -199,7 +199,7 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}},
 		}},
 		endpointsDeletionPending: true,
@@ -225,14 +225,14 @@ func TestReconcile(t *testing.T) {
 			},
 			AddressType: discovery.AddressTypeIPv4,
 			Ports: []discovery.EndpointPort{{
-				Name:     pointer.String("http"),
-				Port:     pointer.Int32(80),
+				Name:     ptr.To("http"),
+				Port:     ptr.To(int32(80)),
 				Protocol: &protoTCP,
 			}},
 			Endpoints: []discovery.Endpoint{{
 				Addresses:  []string{"10.0.0.1"},
-				Hostname:   pointer.String("pod-1"),
-				Conditions: discovery.EndpointConditions{Ready: pointer.Bool(true)},
+				Hostname:   ptr.To("pod-1"),
+				Conditions: discovery.EndpointConditions{Ready: ptr.To(true)},
 			}},
 		}},
 		expectedNumSlices:     1,
@@ -257,14 +257,14 @@ func TestReconcile(t *testing.T) {
 			},
 			AddressType: discovery.AddressTypeIPv4,
 			Ports: []discovery.EndpointPort{{
-				Name:     pointer.String("http"),
-				Port:     pointer.Int32(80),
+				Name:     ptr.To("http"),
+				Port:     ptr.To(int32(80)),
 				Protocol: &protoTCP,
 			}},
 			Endpoints: []discovery.Endpoint{{
 				Addresses:  []string{"10.0.0.1"},
-				Hostname:   pointer.String("pod-1"),
-				Conditions: discovery.EndpointConditions{Ready: pointer.Bool(true)},
+				Hostname:   ptr.To("pod-1"),
+				Conditions: discovery.EndpointConditions{Ready: ptr.To(true)},
 			}},
 		}},
 		expectedNumSlices:     1,
@@ -290,14 +290,14 @@ func TestReconcile(t *testing.T) {
 			},
 			AddressType: discovery.AddressTypeIPv4,
 			Ports: []discovery.EndpointPort{{
-				Name:     pointer.String("http"),
-				Port:     pointer.Int32(80),
+				Name:     ptr.To("http"),
+				Port:     ptr.To(int32(80)),
 				Protocol: &protoTCP,
 			}},
 			Endpoints: []discovery.Endpoint{{
 				Addresses:  []string{"10.0.0.1"},
-				Hostname:   pointer.String("pod-1"),
-				Conditions: discovery.EndpointConditions{Ready: pointer.Bool(true)},
+				Hostname:   ptr.To("pod-1"),
+				Conditions: discovery.EndpointConditions{Ready: ptr.To(true)},
 			}},
 		}},
 		expectedNumSlices:     1,
@@ -317,11 +317,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -343,11 +343,11 @@ func TestReconcile(t *testing.T) {
 			NotReadyAddresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -369,20 +369,20 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.1.1.1",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.1.1.2",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 			NotReadyAddresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -404,11 +404,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -423,15 +423,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.1.1",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.1.2",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "10.0.1.3",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -453,11 +453,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -472,15 +472,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.1.1",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.1.2",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "10.0.1.3",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{{
@@ -489,12 +489,12 @@ func TestReconcile(t *testing.T) {
 			},
 			AddressType: discovery.AddressTypeIPv4,
 			Ports: []discovery.EndpointPort{{
-				Name:     pointer.String("http"),
-				Port:     pointer.Int32(80),
+				Name:     ptr.To("http"),
+				Port:     ptr.To(int32(80)),
 				Protocol: &protoTCP,
 			}, {
-				Name:     pointer.String("https"),
-				Port:     pointer.Int32(443),
+				Name:     ptr.To("https"),
+				Port:     ptr.To(int32(443)),
 				Protocol: &protoUDP,
 			}},
 		}},
@@ -516,11 +516,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -535,15 +535,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.1.1",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.1.2",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "10.0.1.3",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{{
@@ -552,20 +552,20 @@ func TestReconcile(t *testing.T) {
 			},
 			AddressType: discovery.AddressTypeIPv4,
 			Ports: []discovery.EndpointPort{{
-				Name:     pointer.String("http"),
-				Port:     pointer.Int32(80),
+				Name:     ptr.To("http"),
+				Port:     ptr.To(int32(80)),
 				Protocol: &protoTCP,
 			}, {
-				Name:     pointer.String("https"),
-				Port:     pointer.Int32(443),
+				Name:     ptr.To("https"),
+				Port:     ptr.To(int32(443)),
 				Protocol: &protoUDP,
 			}},
 			Endpoints: []discovery.Endpoint{{
 				Addresses: []string{"10.0.0.2"},
-				Hostname:  pointer.String("pod-2"),
+				Hostname:  ptr.To("pod-2"),
 			}, {
 				Addresses: []string{"10.0.0.1", "10.0.0.3"},
-				Hostname:  pointer.String("pod-1"),
+				Hostname:  ptr.To("pod-1"),
 			}},
 		}},
 		expectedNumSlices:     2,
@@ -586,11 +586,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -605,15 +605,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.1.1",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.1.2",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "10.0.1.3",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{{
@@ -622,24 +622,24 @@ func TestReconcile(t *testing.T) {
 			},
 			AddressType: discovery.AddressTypeIPv4,
 			Ports: []discovery.EndpointPort{{
-				Name:     pointer.String("http"),
-				Port:     pointer.Int32(80),
+				Name:     ptr.To("http"),
+				Port:     ptr.To(int32(80)),
 				Protocol: &protoTCP,
 			}, {
-				Name:     pointer.String("https"),
-				Port:     pointer.Int32(443),
+				Name:     ptr.To("https"),
+				Port:     ptr.To(int32(443)),
 				Protocol: &protoUDP,
 			}},
 			Endpoints: []discovery.Endpoint{{
 				Addresses:  []string{"10.0.0.1"},
-				Hostname:   pointer.String("pod-1"),
-				NodeName:   pointer.String("node-1"),
-				Conditions: discovery.EndpointConditions{Ready: pointer.Bool(true)},
+				Hostname:   ptr.To("pod-1"),
+				NodeName:   ptr.To("node-1"),
+				Conditions: discovery.EndpointConditions{Ready: ptr.To(true)},
 			}, {
 				Addresses:  []string{"10.0.0.2"},
-				Hostname:   pointer.String("pod-2"),
-				NodeName:   pointer.String("node-2"),
-				Conditions: discovery.EndpointConditions{Ready: pointer.Bool(true)},
+				Hostname:   ptr.To("pod-2"),
+				NodeName:   ptr.To("node-2"),
+				Conditions: discovery.EndpointConditions{Ready: ptr.To(true)},
 			}},
 		}},
 		expectedNumSlices:     2,
@@ -660,11 +660,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "2001:db8:2222:3333:4444:5555:6666:7777",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -679,15 +679,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.1.1",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.1.2",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "2001:db8:3333:4444:5555:6666:7777:8888",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -709,11 +709,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "2001:db8:1111:3333:4444:5555:6666:7777",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "2001:db8:2222:3333:4444:5555:6666:7777",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -728,15 +728,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "2001:db8:3333:3333:4444:5555:6666:7777",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "2001:db8:4444:3333:4444:5555:6666:7777",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "2001:db8:5555:3333:4444:5555:6666:7777",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -758,11 +758,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "2001:db8:1111:3333:4444:5555:6666:7777",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "this-is-not-an-ip",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -777,15 +777,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "this-is-also-not-an-ip",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "2001:db8:4444:3333:4444:5555:6666:7777",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "2001:db8:5555:3333:4444:5555:6666:7777",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -807,11 +807,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "this-is-not-an-ip1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "this-is-not-an-ip12",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -826,15 +826,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "this-is-not-an-ip11",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "this-is-not-an-ip12",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "this-is-not-an-ip3",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -856,11 +856,11 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.0.1",
 				Hostname: "pod-1",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.0.2",
 				Hostname: "pod-2",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}},
 		}, {
 			Ports: []corev1.EndpointPort{{
@@ -875,15 +875,15 @@ func TestReconcile(t *testing.T) {
 			Addresses: []corev1.EndpointAddress{{
 				IP:       "10.0.1.1",
 				Hostname: "pod-11",
-				NodeName: pointer.String("node-1"),
+				NodeName: ptr.To("node-1"),
 			}, {
 				IP:       "10.0.1.2",
 				Hostname: "pod-12",
-				NodeName: pointer.String("node-2"),
+				NodeName: ptr.To("node-2"),
 			}, {
 				IP:       "10.0.1.3",
 				Hostname: "pod-13",
-				NodeName: pointer.String("node-3"),
+				NodeName: ptr.To("node-3"),
 			}},
 		}},
 		existingEndpointSlices: []*discovery.EndpointSlice{},
@@ -991,14 +991,14 @@ func TestReconcile(t *testing.T) {
 			},
 			AddressType: discovery.AddressTypeIPv4,
 			Ports: []discovery.EndpointPort{{
-				Name:     pointer.String("http"),
-				Port:     pointer.Int32(80),
+				Name:     ptr.To("http"),
+				Port:     ptr.To(int32(80)),
 				Protocol: &protoTCP,
 			}},
 			Endpoints: []discovery.Endpoint{{
 				Addresses:  []string{"10.0.0.1"},
-				Hostname:   pointer.String("pod-1"),
-				Conditions: discovery.EndpointConditions{Ready: pointer.Bool(true)},
+				Hostname:   ptr.To("pod-1"),
+				Conditions: discovery.EndpointConditions{Ready: ptr.To(true)},
 			}},
 		}},
 		expectedNumSlices:     1,
@@ -1038,8 +1038,11 @@ func TestReconcile(t *testing.T) {
 			if maxEndpointsPerSubset == 0 {
 				maxEndpointsPerSubset = defaultMaxEndpointsPerSubset
 			}
-			r := newReconciler(tCtx, client, maxEndpointsPerSubset)
-			reconcileHelper(t, r, &endpoints, tc.existingEndpointSlices)
+			r := newEndpointsReconciler(tCtx, client, maxEndpointsPerSubset)
+			err := r.reconcileHelper(t, &endpoints, tc.existingEndpointSlices)
+			if err != nil {
+				t.Fatalf("Expected no error on reconcile, got %v", err)
+			}
 
 			numExtraActions := len(client.Actions()) - numInitialActions
 			if numExtraActions != tc.expectedClientActions {
@@ -1058,16 +1061,26 @@ func TestReconcile(t *testing.T) {
 
 // Test Helpers
 
-func newReconciler(ctx context.Context, client *fake.Clientset, maxEndpointsPerSubset int32) *reconciler {
+type endpointsReconcilerHelper struct {
+	reconciler            *Reconciler
+	maxEndpointsPerSubset int32
+}
+
+func newEndpointsReconciler(ctx context.Context, client *fake.Clientset, maxEndpointsPerSubset int32) *endpointsReconcilerHelper {
 	broadcaster := record.NewBroadcaster(record.WithContext(ctx))
 	recorder := broadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: "endpoint-slice-mirroring-controller"})
 
-	return &reconciler{
-		client:                client,
+	reconciler := NewReconciler(
+		client,
+		endpointsliceutil.NewEndpointSliceTracker(),
+		recorder,
+		controllerName,
+		maxEndpointsPerSubset,
+	)
+
+	return &endpointsReconcilerHelper{
+		reconciler:            reconciler,
 		maxEndpointsPerSubset: maxEndpointsPerSubset,
-		endpointSliceTracker:  endpointsliceutil.NewEndpointSliceTracker(),
-		metricsCache:          metrics.NewCache(maxEndpointsPerSubset),
-		eventRecorder:         recorder,
 	}
 }
 
@@ -1249,122 +1262,38 @@ func expectMatchingAddresses(t *testing.T, epSubset corev1.EndpointSubset, esEnd
 	}
 }
 
-func fetchEndpointSlices(t *testing.T, client *fake.Clientset, namespace string) []discovery.EndpointSlice {
-	t.Helper()
-	fetchedSlices, err := client.DiscoveryV1().EndpointSlices(namespace).List(context.TODO(), metav1.ListOptions{
-		LabelSelector: discovery.LabelManagedBy + "=" + controllerName,
-	})
-	if err != nil {
-		t.Fatalf("Expected no error fetching Endpoint Slices, got: %v", err)
-		return []discovery.EndpointSlice{}
-	}
-	return fetchedSlices.Items
-}
+// func fetchEndpointSlices(t *testing.T, client *fake.Clientset, namespace string) []discovery.EndpointSlice {
+// 	t.Helper()
+// 	fetchedSlices, err := client.DiscoveryV1().EndpointSlices(namespace).List(context.TODO(), metav1.ListOptions{
+// 		LabelSelector: discovery.LabelManagedBy + "=" + controllerName,
+// 	})
+// 	if err != nil {
+// 		t.Fatalf("Expected no error fetching Endpoint Slices, got: %v", err)
+// 		return []discovery.EndpointSlice{}
+// 	}
+// 	return fetchedSlices.Items
+// }
 
-func reconcileHelper(t *testing.T, r *reconciler, endpoints *corev1.Endpoints, existingSlices []*discovery.EndpointSlice) {
+func (erh *endpointsReconcilerHelper) reconcileHelper(t *testing.T, endpoints *corev1.Endpoints, existingSlices []*discovery.EndpointSlice) error {
 	t.Helper()
 	logger, _ := ktesting.NewTestContext(t)
-	err := r.reconcile(logger, endpoints, existingSlices)
-	if err != nil {
-		t.Fatalf("Expected no error reconciling Endpoint Slices, got: %v", err)
-	}
-}
 
-// Metrics helpers
+	labelsAnnotationsFromEndpoints := LabelsAnnotationsFromEndpoints{Endpoints: endpoints}
+	desiredEndpoints, supportedAddressesTypes := FromEndpoints(endpoints, erh.maxEndpointsPerSubset)
 
-type expectedMetrics struct {
-	desiredSlices    int
-	actualSlices     int
-	desiredEndpoints int
-	addedPerSync     int
-	updatedPerSync   int
-	removedPerSync   int
-	skippedPerSync   int
-	numCreated       int
-	numUpdated       int
-	numDeleted       int
-}
-
-func expectMetrics(t *testing.T, em expectedMetrics) {
-	t.Helper()
-
-	actualDesiredSlices, err := testutil.GetGaugeMetricValue(metrics.DesiredEndpointSlices.WithLabelValues())
-	handleErr(t, err, "desiredEndpointSlices")
-	if actualDesiredSlices != float64(em.desiredSlices) {
-		t.Errorf("Expected desiredEndpointSlices to be %d, got %v", em.desiredSlices, actualDesiredSlices)
-	}
-
-	actualNumSlices, err := testutil.GetGaugeMetricValue(metrics.NumEndpointSlices.WithLabelValues())
-	handleErr(t, err, "numEndpointSlices")
-	if actualNumSlices != float64(em.actualSlices) {
-		t.Errorf("Expected numEndpointSlices to be %d, got %v", em.actualSlices, actualNumSlices)
-	}
-
-	actualEndpointsDesired, err := testutil.GetGaugeMetricValue(metrics.EndpointsDesired.WithLabelValues())
-	handleErr(t, err, "desiredEndpoints")
-	if actualEndpointsDesired != float64(em.desiredEndpoints) {
-		t.Errorf("Expected desiredEndpoints to be %d, got %v", em.desiredEndpoints, actualEndpointsDesired)
-	}
-
-	actualAddedPerSync, err := testutil.GetHistogramMetricValue(metrics.EndpointsAddedPerSync.WithLabelValues())
-	handleErr(t, err, "endpointsAddedPerSync")
-	if actualAddedPerSync != float64(em.addedPerSync) {
-		t.Errorf("Expected endpointsAddedPerSync to be %d, got %v", em.addedPerSync, actualAddedPerSync)
-	}
-
-	actualUpdatedPerSync, err := testutil.GetHistogramMetricValue(metrics.EndpointsUpdatedPerSync.WithLabelValues())
-	handleErr(t, err, "endpointsUpdatedPerSync")
-	if actualUpdatedPerSync != float64(em.updatedPerSync) {
-		t.Errorf("Expected endpointsUpdatedPerSync to be %d, got %v", em.updatedPerSync, actualUpdatedPerSync)
-	}
-
-	actualRemovedPerSync, err := testutil.GetHistogramMetricValue(metrics.EndpointsRemovedPerSync.WithLabelValues())
-	handleErr(t, err, "endpointsRemovedPerSync")
-	if actualRemovedPerSync != float64(em.removedPerSync) {
-		t.Errorf("Expected endpointsRemovedPerSync to be %d, got %v", em.removedPerSync, actualRemovedPerSync)
-	}
-
-	actualSkippedPerSync, err := testutil.GetHistogramMetricValue(metrics.AddressesSkippedPerSync.WithLabelValues())
-	handleErr(t, err, "addressesSkippedPerSync")
-	if actualSkippedPerSync != float64(em.skippedPerSync) {
-		t.Errorf("Expected addressesSkippedPerSync to be %d, got %v", em.skippedPerSync, actualSkippedPerSync)
-	}
-
-	actualCreated, err := testutil.GetCounterMetricValue(metrics.EndpointSliceChanges.WithLabelValues("create"))
-	handleErr(t, err, "endpointSliceChangesCreated")
-	if actualCreated != float64(em.numCreated) {
-		t.Errorf("Expected endpointSliceChangesCreated to be %d, got %v", em.numCreated, actualCreated)
-	}
-
-	actualUpdated, err := testutil.GetCounterMetricValue(metrics.EndpointSliceChanges.WithLabelValues("update"))
-	handleErr(t, err, "endpointSliceChangesUpdated")
-	if actualUpdated != float64(em.numUpdated) {
-		t.Errorf("Expected endpointSliceChangesUpdated to be %d, got %v", em.numUpdated, actualUpdated)
-	}
-
-	actualDeleted, err := testutil.GetCounterMetricValue(metrics.EndpointSliceChanges.WithLabelValues("delete"))
-	handleErr(t, err, "desiredEndpointSlices")
-	if actualDeleted != float64(em.numDeleted) {
-		t.Errorf("Expected endpointSliceChangesDeleted to be %d, got %v", em.numDeleted, actualDeleted)
-	}
-}
-
-func handleErr(t *testing.T, err error, metricName string) {
-	if err != nil {
-		t.Errorf("Failed to get %s value, err: %v", metricName, err)
-	}
-}
-
-func setupMetrics() {
-	metrics.RegisterMetrics()
-	metrics.NumEndpointSlices.Delete(map[string]string{})
-	metrics.DesiredEndpointSlices.Delete(map[string]string{})
-	metrics.EndpointsDesired.Delete(map[string]string{})
-	metrics.EndpointsAddedPerSync.Delete(map[string]string{})
-	metrics.EndpointsUpdatedPerSync.Delete(map[string]string{})
-	metrics.EndpointsRemovedPerSync.Delete(map[string]string{})
-	metrics.AddressesSkippedPerSync.Delete(map[string]string{})
-	metrics.EndpointSliceChanges.Delete(map[string]string{"operation": "create"})
-	metrics.EndpointSliceChanges.Delete(map[string]string{"operation": "update"})
-	metrics.EndpointSliceChanges.Delete(map[string]string{"operation": "delete"})
+	// err := erh.reconciler.Reconcile(logger, endpoints, existingSlices)
+	// if err != nil {
+	// 	t.Fatalf("Expected no error reconciling Endpoint Slices, got: %v", err)
+	// }
+	return erh.reconciler.Reconcile(
+		logger,
+		schema.GroupVersionKind{Version: "v1", Kind: "Endpoints"},
+		endpoints,
+		desiredEndpoints,
+		existingSlices,
+		supportedAddressesTypes,
+		nil,
+		labelsAnnotationsFromEndpoints.Set,
+		time.Time{},
+	)
 }
