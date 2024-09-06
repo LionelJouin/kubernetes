@@ -24,6 +24,7 @@ type ResourceClaimStatusApplyConfiguration struct {
 	Allocation            *AllocationResultApplyConfiguration                `json:"allocation,omitempty"`
 	ReservedFor           []ResourceClaimConsumerReferenceApplyConfiguration `json:"reservedFor,omitempty"`
 	DeallocationRequested *bool                                              `json:"deallocationRequested,omitempty"`
+	DeviceStatuses        []AllocatedDeviceStatusApplyConfiguration          `json:"deviceStatuses,omitempty"`
 }
 
 // ResourceClaimStatusApplyConfiguration constructs a declarative configuration of the ResourceClaimStatus type for use with
@@ -58,5 +59,18 @@ func (b *ResourceClaimStatusApplyConfiguration) WithReservedFor(values ...*Resou
 // If called multiple times, the DeallocationRequested field is set to the value of the last call.
 func (b *ResourceClaimStatusApplyConfiguration) WithDeallocationRequested(value bool) *ResourceClaimStatusApplyConfiguration {
 	b.DeallocationRequested = &value
+	return b
+}
+
+// WithDeviceStatuses adds the given value to the DeviceStatuses field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the DeviceStatuses field.
+func (b *ResourceClaimStatusApplyConfiguration) WithDeviceStatuses(values ...*AllocatedDeviceStatusApplyConfiguration) *ResourceClaimStatusApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithDeviceStatuses")
+		}
+		b.DeviceStatuses = append(b.DeviceStatuses, *values[i])
+	}
 	return b
 }

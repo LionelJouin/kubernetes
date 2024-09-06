@@ -159,6 +159,41 @@
         "uid": "uidValue"
       }
     ],
-    "deallocationRequested": true
+    "deallocationRequested": true,
+    "deviceStatuses": [
+      {
+        "request": "requestValue",
+        "driver": "driverValue",
+        "pool": "poolValue",
+        "device": "deviceValue",
+        "conditions": [
+          {
+            "type": "typeValue",
+            "status": "statusValue",
+            "observedGeneration": 3,
+            "lastTransitionTime": "2004-01-01T01:01:01Z",
+            "reason": "reasonValue",
+            "message": "messageValue"
+          }
+        ],
+        "deviceInfo": {
+          "apiVersion": "example.com/v1",
+          "kind": "CustomType",
+          "spec": {
+            "replicas": 1
+          },
+          "status": {
+            "available": 1
+          }
+        },
+        "networkDeviceInfo": {
+          "interface": "interfaceValue",
+          "ips": [
+            "ipsValue"
+          ],
+          "mac": "macValue"
+        }
+      }
+    ]
   }
 }

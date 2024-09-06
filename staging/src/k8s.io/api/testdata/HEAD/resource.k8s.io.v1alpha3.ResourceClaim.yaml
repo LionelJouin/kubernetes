@@ -95,6 +95,30 @@ status:
           values:
           - valuesValue
   deallocationRequested: true
+  deviceStatuses:
+  - conditions:
+    - lastTransitionTime: "2004-01-01T01:01:01Z"
+      message: messageValue
+      observedGeneration: 3
+      reason: reasonValue
+      status: statusValue
+      type: typeValue
+    device: deviceValue
+    deviceInfo:
+      apiVersion: example.com/v1
+      kind: CustomType
+      spec:
+        replicas: 1
+      status:
+        available: 1
+    driver: driverValue
+    networkDeviceInfo:
+      interface: interfaceValue
+      ips:
+      - ipsValue
+      mac: macValue
+    pool: poolValue
+    request: requestValue
   reservedFor:
   - apiGroup: apiGroupValue
     name: nameValue

@@ -12244,6 +12244,38 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: namespace
       type:
         scalar: string
+- name: io.k8s.api.resource.v1alpha3.AllocatedDeviceStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: atomic
+    - name: device
+      type:
+        scalar: string
+      default: ""
+    - name: deviceInfo
+      type:
+        namedType: __untyped_atomic_
+    - name: driver
+      type:
+        scalar: string
+      default: ""
+    - name: networkDeviceInfo
+      type:
+        namedType: io.k8s.api.resource.v1alpha3.NetworkDeviceInfo
+      default: {}
+    - name: pool
+      type:
+        scalar: string
+      default: ""
+    - name: request
+      type:
+        scalar: string
+      default: ""
 - name: io.k8s.api.resource.v1alpha3.AllocationResult
   map:
     fields:
@@ -12471,6 +12503,21 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: cel
       type:
         namedType: io.k8s.api.resource.v1alpha3.CELDeviceSelector
+- name: io.k8s.api.resource.v1alpha3.NetworkDeviceInfo
+  map:
+    fields:
+    - name: interface
+      type:
+        scalar: string
+    - name: ips
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: mac
+      type:
+        scalar: string
 - name: io.k8s.api.resource.v1alpha3.OpaqueDeviceConfiguration
   map:
     fields:
@@ -12596,6 +12643,15 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: deallocationRequested
       type:
         scalar: boolean
+    - name: deviceStatuses
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.api.resource.v1alpha3.AllocatedDeviceStatus
+          elementRelationship: associative
+          keys:
+          - devicePoolName
+          - deviceName
     - name: reservedFor
       type:
         list:
