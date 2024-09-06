@@ -665,6 +665,16 @@ type ResourceClaimStatus struct {
 	// +optional
 	// +featureGate=DRAControlPlaneController
 	DeallocationRequested bool
+
+	// DeviceStatuses contains the status of each device allocated for this
+	// claim, as reported by the driver. This can include driver-specific
+	// information. Entries are owned by their respective drivers.
+	//
+	// +optional
+	// +listType=map
+	// +listMapKey=devicePoolName
+	// +listMapKey=deviceName
+	DeviceStatuses []AllocatedDeviceStatus
 }
 
 // ReservedForMaxSize is the maximum number of entries in
@@ -1044,4 +1054,81 @@ type ResourceClaimTemplateList struct {
 
 	// Items is the list of resource claim templates.
 	Items []ResourceClaimTemplate
+}
+
+// AllocatedDeviceStatus contains the status of an allocated device, if the
+// driver chooses to report it. This may include driver-specific information.
+type AllocatedDeviceStatus struct {
+	// Request is the name of the request in the claim which caused this
+	// device to be allocated. Multiple devices may have been allocated
+	// per request.
+	//
+	// +required
+	Request string
+
+	// Driver specifies the name of the DRA driver whose kubelet
+	// plugin should be invoked to process the allocation once the claim is
+	// needed on a node.
+	//
+	// Must be a DNS subdomain and should end with a DNS domain owned by the
+	// vendor of the driver.
+	//
+	// +required
+	Driver string
+
+	// This name together with the driver name and the device name field
+	// identify which device was allocated (`<driver name>/<pool name>/<device name>`).
+	//
+	// Must not be longer than 253 characters and may contain one or more
+	// DNS sub-domains separated by slashes.
+	//
+	// +required
+	Pool string
+
+	// Device references one device instance via its name in the driver's
+	// resource pool. It must be a DNS label.
+	//
+	// +required
+	Device string
+
+	// Conditions contains the latest observation of the device's state.
+	// If the device has been configured according to the class and claim
+	// config references, the `Ready` condition should be True.
+	//
+	// +optional
+	// +listType=atomic
+	Conditions []metav1.Condition
+
+	// DeviceInfo contains Arbitrary driver-specific data.
+	//
+	// +optional
+	DeviceInfo runtime.RawExtension
+
+	// NetworkDeviceInfo contains network-related information specific to the device.
+	//
+	// +optional
+	NetworkDeviceInfo NetworkDeviceInfo
+}
+
+// NetworkDeviceInfo provides network-related details for the allocated device.
+// This information may be filled by drivers or other components to configure
+// or identify the device within a network context.
+type NetworkDeviceInfo struct {
+	// Interface specifies the name of the network interface associated with
+	// the allocated device. This might be the name of a physical or virtual
+	// network interface.
+	//
+	// +optional
+	Interface string
+
+	// IPs lists the IP addresses assigned to the device's network interface.
+	// This can include both IPv4 and IPv6 addresses.
+	//
+	// +optional
+	IPs []string
+
+	// Mac represents the MAC address of the device's network interface.
+	//
+	// +optional
+	Mac string
 }
