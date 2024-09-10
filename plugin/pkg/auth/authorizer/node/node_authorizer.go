@@ -131,6 +131,9 @@ func (r *NodeAuthorizer) Authorize(ctx context.Context, attrs authorizer.Attribu
 		case pvResource:
 			return r.authorizeGet(nodeName, pvVertexType, attrs)
 		case resourceClaimResource:
+			if attrs.GetSubresource() == "status" {
+				return r.authorizeStatusUpdate(nodeName, resourceClaimVertexType, attrs)
+			}
 			return r.authorizeGet(nodeName, resourceClaimVertexType, attrs)
 		case vaResource:
 			return r.authorizeGet(nodeName, vaVertexType, attrs)
