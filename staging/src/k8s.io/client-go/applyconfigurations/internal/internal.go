@@ -12244,6 +12244,37 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: namespace
       type:
         scalar: string
+- name: io.k8s.api.resource.v1alpha3.AllocatedDeviceStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: atomic
+    - name: data
+      type:
+        list:
+          elementType:
+            namedType: __untyped_atomic_
+          elementRelationship: atomic
+    - name: device
+      type:
+        scalar: string
+      default: ""
+    - name: driver
+      type:
+        scalar: string
+      default: ""
+    - name: networkData
+      type:
+        namedType: io.k8s.api.resource.v1alpha3.NetworkDeviceData
+      default: {}
+    - name: pool
+      type:
+        scalar: string
+      default: ""
 - name: io.k8s.api.resource.v1alpha3.AllocationResult
   map:
     fields:
@@ -12471,6 +12502,27 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: cel
       type:
         namedType: io.k8s.api.resource.v1alpha3.CELDeviceSelector
+- name: io.k8s.api.resource.v1alpha3.NetworkAddress
+  map:
+    fields:
+    - name: cidr
+      type:
+        scalar: string
+- name: io.k8s.api.resource.v1alpha3.NetworkDeviceData
+  map:
+    fields:
+    - name: addresses
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.api.resource.v1alpha3.NetworkAddress
+          elementRelationship: atomic
+    - name: hwAddress
+      type:
+        scalar: string
+    - name: interfaceName
+      type:
+        scalar: string
 - name: io.k8s.api.resource.v1alpha3.OpaqueDeviceConfiguration
   map:
     fields:
@@ -12596,6 +12648,16 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: deallocationRequested
       type:
         scalar: boolean
+    - name: devices
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.api.resource.v1alpha3.AllocatedDeviceStatus
+          elementRelationship: associative
+          keys:
+          - driver
+          - device
+          - pool
     - name: reservedFor
       type:
         list:
