@@ -255,6 +255,14 @@ const (
 	// based on "structured parameters".
 	DynamicResourceAllocation featuregate.Feature = "DynamicResourceAllocation"
 
+	// owner: @jane.doe
+	// kep: http://kep.k8s.io/4817
+	// alpha: v1.32
+	//
+	// Add driver-owned fields in ResourceClaim.Status with possible standardized
+	// network interface data.
+	DRAResourceClaimDeviceStatus featuregate.Feature = "DRAResourceClaimDeviceStatus"
+
 	// owner: @harche
 	// kep: http://kep.k8s.io/3386
 	// alpha: v1.25
