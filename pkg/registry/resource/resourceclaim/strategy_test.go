@@ -23,13 +23,89 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	genericapirequest "k8s.io/apiserver/pkg/endpoints/request"
+	utilfeature "k8s.io/apiserver/pkg/util/feature"
+	featuregatetesting "k8s.io/component-base/featuregate/testing"
 	"k8s.io/kubernetes/pkg/apis/resource"
+	"k8s.io/kubernetes/pkg/features"
 )
 
 var obj = &resource.ResourceClaim{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "valid-claim",
 		Namespace: "default",
+	},
+}
+
+var objWithRequestAndStatus = &resource.ResourceClaim{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "valid-claim",
+		Namespace: "default",
+	},
+	Spec: resource.ResourceClaimSpec{
+		Devices: resource.DeviceClaim{
+			Requests: []resource.DeviceRequest{
+				{
+					Name:            "test-request",
+					DeviceClassName: "test-device-class",
+					AllocationMode:  resource.DeviceAllocationModeExactCount,
+					Count:           1,
+				},
+			},
+		},
+	},
+	Status: resource.ResourceClaimStatus{
+		Allocation: &resource.AllocationResult{
+			Devices: resource.DeviceAllocationResult{
+				Results: []resource.DeviceRequestAllocationResult{
+					{
+						Request: "test-request",
+						Driver:  "test-driver",
+						Pool:    "test-pool",
+						Device:  "test-device",
+					},
+				},
+			},
+		},
+	},
+}
+
+var objWithGatedStatusFields = &resource.ResourceClaim{
+	ObjectMeta: metav1.ObjectMeta{
+		Name:      "valid-claim",
+		Namespace: "default",
+	},
+	Spec: resource.ResourceClaimSpec{
+		Devices: resource.DeviceClaim{
+			Requests: []resource.DeviceRequest{
+				{
+					Name:            "test-request",
+					DeviceClassName: "test-device-class",
+					AllocationMode:  resource.DeviceAllocationModeExactCount,
+					Count:           1,
+				},
+			},
+		},
+	},
+	Status: resource.ResourceClaimStatus{
+		Allocation: &resource.AllocationResult{
+			Devices: resource.DeviceAllocationResult{
+				Results: []resource.DeviceRequestAllocationResult{
+					{
+						Request: "test-request",
+						Driver:  "test-driver",
+						Pool:    "test-pool",
+						Device:  "test-device",
+					},
+				},
+			},
+		},
+		Devices: []resource.AllocatedDeviceStatus{
+			{
+				Driver: "test-driver",
+				Pool:   "test-pool",
+				Device: "test-device",
+			},
+		},
 	},
 }
 
@@ -141,10 +217,11 @@ func TestStatusStrategyUpdate(t *testing.T) {
 	ctx := genericapirequest.NewDefaultContext()
 
 	testcases := map[string]struct {
-		oldObj                *resource.ResourceClaim
-		newObj                *resource.ResourceClaim
-		expectValidationError bool
-		expectObj             *resource.ResourceClaim
+		oldObj                  *resource.ResourceClaim
+		newObj                  *resource.ResourceClaim
+		expectValidationError   bool
+		expectObj               *resource.ResourceClaim
+		deviceStatusFeatureGate bool
 	}{
 		"no-changes-okay": {
 			oldObj:    obj,
@@ -172,10 +249,29 @@ func TestStatusStrategyUpdate(t *testing.T) {
 			}(),
 			expectObj: obj,
 		},
+		"drop-fields-devices-status": {
+			oldObj:                  objWithRequestAndStatus,
+			newObj:                  objWithGatedStatusFields,
+			deviceStatusFeatureGate: false,
+			expectObj:               objWithRequestAndStatus,
+		},
+		"keep-fields-devices-status": {
+			oldObj:                  objWithRequestAndStatus,
+			newObj:                  objWithGatedStatusFields,
+			deviceStatusFeatureGate: true,
+			expectObj: func() *resource.ResourceClaim {
+				expectObj := objWithGatedStatusFields.DeepCopy()
+				// Spec remains unchanged.
+				expectObj.Spec = objWithRequestAndStatus.Spec
+				return expectObj
+			}(),
+		},
 	}
 
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
+			featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.DRAResourceClaimDeviceStatus, tc.deviceStatusFeatureGate)
+
 			oldObj := tc.oldObj.DeepCopy()
 			newObj := tc.newObj.DeepCopy()
 			newObj.ResourceVersion = "4"

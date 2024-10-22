@@ -364,8 +364,6 @@ func TestValidateClaimUpdate(t *testing.T) {
 }
 
 func TestValidateClaimStatusUpdate(t *testing.T) {
-	featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.DRAResourceClaimDeviceStatus, true)
-
 	validAllocatedClaim := validClaim.DeepCopy()
 	validAllocatedClaim.Status = resource.ResourceClaimStatus{
 		Allocation: &resource.AllocationResult{
@@ -381,9 +379,10 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 	}
 
 	scenarios := map[string]struct {
-		oldClaim     *resource.ResourceClaim
-		update       func(claim *resource.ResourceClaim) *resource.ResourceClaim
-		wantFailures field.ErrorList
+		oldClaim                *resource.ResourceClaim
+		update                  func(claim *resource.ResourceClaim) *resource.ResourceClaim
+		wantFailures            field.ErrorList
+		deviceStatusFeatureGate bool
 	}{
 		"valid-no-op-update": {
 			oldClaim: validClaim,
@@ -641,6 +640,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 				}
 				return claim
 			},
+			deviceStatusFeatureGate: true,
 		},
 		"invalid-device-status-duplicate": {
 			wantFailures: field.ErrorList{
@@ -663,6 +663,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 				}
 				return claim
 			},
+			deviceStatusFeatureGate: true,
 		},
 		"invalid-network-device-status": {
 			wantFailures: field.ErrorList{
@@ -685,6 +686,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 				}
 				return claim
 			},
+			deviceStatusFeatureGate: true,
 		},
 		"invalid-data-device-status": {
 			wantFailures: field.ErrorList{
@@ -705,6 +707,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 				}
 				return claim
 			},
+			deviceStatusFeatureGate: true,
 		},
 		"invalid-device-status-no-device": {
 			wantFailures: field.ErrorList{
@@ -722,11 +725,91 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 				}
 				return claim
 			},
+			deviceStatusFeatureGate: true,
+		},
+		"invalid-device-status-duplicate-disabled-feature-gate": {
+			wantFailures: nil,
+			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
+				claim = claim.DeepCopy()
+				claim.Status.Devices = []resource.AllocatedDeviceStatus{
+					{
+						Driver: goodName,
+						Pool:   goodName,
+						Device: goodName,
+					},
+					{
+						Driver: goodName,
+						Pool:   goodName,
+						Device: goodName,
+					},
+				}
+				return claim
+			},
+			deviceStatusFeatureGate: false,
+		},
+		"invalid-network-device-status-disabled-feature-gate": {
+			wantFailures: nil,
+			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
+				claim = claim.DeepCopy()
+				claim.Status.Devices = []resource.AllocatedDeviceStatus{
+					{
+						Driver: goodName,
+						Pool:   goodName,
+						Device: goodName,
+						NetworkData: &resource.NetworkDeviceData{
+							Addresses: []string{
+								"300.9.8.0/24",
+							},
+						},
+					},
+				}
+				return claim
+			},
+			deviceStatusFeatureGate: false,
+		},
+		"invalid-data-device-status-disabled-feature-gate": {
+			wantFailures: nil,
+			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
+				claim = claim.DeepCopy()
+				claim.Status.Devices = []resource.AllocatedDeviceStatus{
+					{
+						Driver: goodName,
+						Pool:   goodName,
+						Device: goodName,
+						Data: &runtime.RawExtension{
+							Raw: []byte(`foo`),
+						},
+					},
+				}
+				return claim
+			},
+			deviceStatusFeatureGate: false,
+		},
+		"invalid-device-status-no-device-disabled-feature-gate": {
+			wantFailures: nil,
+			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
+				claim = claim.DeepCopy()
+				claim.Status.Devices = []resource.AllocatedDeviceStatus{
+					{
+						Driver: "b",
+						Pool:   "a",
+						Device: "r",
+					},
+				}
+				return claim
+			},
+			deviceStatusFeatureGate: false,
 		},
 	}
 
 	for name, scenario := range scenarios {
 		t.Run(name, func(t *testing.T) {
+			featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.DRAResourceClaimDeviceStatus, scenario.deviceStatusFeatureGate)
+
 			scenario.oldClaim.ResourceVersion = "1"
 			errs := ValidateResourceClaimStatusUpdate(scenario.update(scenario.oldClaim.DeepCopy()), scenario.oldClaim)
 			assert.Equal(t, scenario.wantFailures, errs)
