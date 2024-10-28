@@ -380,7 +380,7 @@ func autoConvert_v1alpha3_AllocatedDeviceStatus_To_resource_AllocatedDeviceStatu
 	out.Pool = in.Pool
 	out.Device = in.Device
 	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
-	out.Data = (*runtime.RawExtension)(unsafe.Pointer(in.Data))
+	out.Data = in.Data
 	out.NetworkData = (*resource.NetworkDeviceData)(unsafe.Pointer(in.NetworkData))
 	return nil
 }
@@ -395,7 +395,7 @@ func autoConvert_resource_AllocatedDeviceStatus_To_v1alpha3_AllocatedDeviceStatu
 	out.Pool = in.Pool
 	out.Device = in.Device
 	out.Conditions = *(*[]v1.Condition)(unsafe.Pointer(&in.Conditions))
-	out.Data = (*runtime.RawExtension)(unsafe.Pointer(in.Data))
+	out.Data = in.Data
 	out.NetworkData = (*resourcev1alpha3.NetworkDeviceData)(unsafe.Pointer(in.NetworkData))
 	return nil
 }
@@ -834,9 +834,9 @@ func Convert_resource_DeviceSelector_To_v1alpha3_DeviceSelector(in *resource.Dev
 }
 
 func autoConvert_v1alpha3_NetworkDeviceData_To_resource_NetworkDeviceData(in *resourcev1alpha3.NetworkDeviceData, out *resource.NetworkDeviceData, s conversion.Scope) error {
-	out.InterfaceName = (*string)(unsafe.Pointer(in.InterfaceName))
+	out.InterfaceName = in.InterfaceName
 	out.Addresses = *(*[]string)(unsafe.Pointer(&in.Addresses))
-	out.HWAddress = (*string)(unsafe.Pointer(in.HWAddress))
+	out.HWAddress = in.HWAddress
 	return nil
 }
 
@@ -846,9 +846,9 @@ func Convert_v1alpha3_NetworkDeviceData_To_resource_NetworkDeviceData(in *resour
 }
 
 func autoConvert_resource_NetworkDeviceData_To_v1alpha3_NetworkDeviceData(in *resource.NetworkDeviceData, out *resourcev1alpha3.NetworkDeviceData, s conversion.Scope) error {
-	out.InterfaceName = (*string)(unsafe.Pointer(in.InterfaceName))
+	out.InterfaceName = in.InterfaceName
 	out.Addresses = *(*[]string)(unsafe.Pointer(&in.Addresses))
-	out.HWAddress = (*string)(unsafe.Pointer(in.HWAddress))
+	out.HWAddress = in.HWAddress
 	return nil
 }
 
