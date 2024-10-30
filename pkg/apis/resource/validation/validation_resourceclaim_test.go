@@ -694,7 +694,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 		"valid-network-device-status": {
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: goodName,
@@ -729,7 +728,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: goodName,
@@ -752,7 +750,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: goodName,
@@ -775,7 +772,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: goodName,
@@ -796,7 +792,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: "b",
@@ -812,7 +807,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			wantFailures: nil,
 			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: goodName,
@@ -833,7 +827,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			wantFailures: nil,
 			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: goodName,
@@ -854,7 +847,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			wantFailures: nil,
 			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: goodName,
@@ -873,7 +865,6 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			wantFailures: nil,
 			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
-				claim = claim.DeepCopy()
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
 						Driver: "b",
