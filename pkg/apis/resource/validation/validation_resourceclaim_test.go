@@ -915,8 +915,11 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 						Device: goodName,
 						Conditions: []metav1.Condition{
 							{
-								Type:   "test",
-								Status: metav1.ConditionTrue,
+								Type:               "test",
+								Status:             metav1.ConditionTrue,
+								Reason:             "test_reason",
+								LastTransitionTime: metav1.Now(),
+								ObservedGeneration: 0,
 							},
 						},
 						Data: runtime.RawExtension{
@@ -928,7 +931,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 								"10.9.8.0/24",
 								"2001:db8::/64",
 							},
-							HWAddress: "ea:9f:cb:40:b1:7b",
+							HardwareAddress: "ea:9f:cb:40:b1:7b",
 						},
 					},
 				}
@@ -1018,8 +1021,10 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			deviceStatusFeatureGate: true,
 		},
 		"invalid-device-status-duplicate-disabled-feature-gate": {
-			wantFailures: nil,
-			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			wantFailures: field.ErrorList{
+				field.Duplicate(field.NewPath("status", "devices").Index(1).Child("deviceID"), structured.DeviceID{Driver: goodName, Pool: goodName, Device: goodName}),
+			},
+			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
@@ -1038,8 +1043,10 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			deviceStatusFeatureGate: false,
 		},
 		"invalid-network-device-status-disabled-feature-gate": {
-			wantFailures: nil,
-			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			wantFailures: field.ErrorList{
+				field.Invalid(field.NewPath("status", "devices").Index(0).Child("networkData", "addresses").Index(0), "300.9.8.0/24", "must be a valid CIDR value, (e.g. 10.9.8.0/24 or 2001:db8::/64)"),
+			},
+			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
@@ -1058,8 +1065,10 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			deviceStatusFeatureGate: false,
 		},
 		"invalid-data-device-status-disabled-feature-gate": {
-			wantFailures: nil,
-			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			wantFailures: field.ErrorList{
+				field.Invalid(field.NewPath("status", "devices").Index(0).Child("data"), "<value omitted>", "error parsing data: invalid character 'o' in literal false (expecting 'a')"),
+			},
+			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
@@ -1076,8 +1085,10 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			deviceStatusFeatureGate: false,
 		},
 		"invalid-device-status-no-device-disabled-feature-gate": {
-			wantFailures: nil,
-			oldClaim:     func() *resource.ResourceClaim { return validAllocatedClaim }(),
+			wantFailures: field.ErrorList{
+				field.Invalid(field.NewPath("status", "devices").Index(0), structured.DeviceID{Driver: "b", Pool: "a", Device: "r"}, "must be an allocated device in the claim"),
+			},
+			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
 				claim.Status.Devices = []resource.AllocatedDeviceStatus{
 					{
