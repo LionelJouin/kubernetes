@@ -21,9 +21,9 @@ package v1alpha3
 // NetworkDeviceDataApplyConfiguration represents a declarative configuration of the NetworkDeviceData type for use
 // with apply.
 type NetworkDeviceDataApplyConfiguration struct {
-	InterfaceName *string  `json:"interfaceName,omitempty"`
-	Addresses     []string `json:"addresses,omitempty"`
-	HWAddress     *string  `json:"hwAddress,omitempty"`
+	InterfaceName   *string  `json:"interfaceName,omitempty"`
+	Addresses       []string `json:"addresses,omitempty"`
+	HardwareAddress *string  `json:"hardwareAddress,omitempty"`
 }
 
 // NetworkDeviceDataApplyConfiguration constructs a declarative configuration of the NetworkDeviceData type for use with
@@ -50,10 +50,10 @@ func (b *NetworkDeviceDataApplyConfiguration) WithAddresses(values ...string) *N
 	return b
 }
 
-// WithHWAddress sets the HWAddress field in the declarative configuration to the given value
+// WithHardwareAddress sets the HardwareAddress field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the HWAddress field is set to the value of the last call.
-func (b *NetworkDeviceDataApplyConfiguration) WithHWAddress(value string) *NetworkDeviceDataApplyConfiguration {
-	b.HWAddress = &value
+// If called multiple times, the HardwareAddress field is set to the value of the last call.
+func (b *NetworkDeviceDataApplyConfiguration) WithHardwareAddress(value string) *NetworkDeviceDataApplyConfiguration {
+	b.HardwareAddress = &value
 	return b
 }

@@ -548,10 +548,10 @@ message NetworkDeviceData {
   // +listType=atomic
   repeated string addresses = 2;
 
-  // HWAddress represents the hardware address (e.g. MAC Address) of the device's network interface.
+  // HardwareAddress represents the hardware address (e.g. MAC Address) of the device's network interface.
   //
   // +optional
-  optional string hwAddress = 3;
+  optional string hardwareAddress = 3;
 }
 
 // OpaqueDeviceConfiguration contains configuration parameters for a driver

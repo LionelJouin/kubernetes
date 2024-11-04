@@ -12503,7 +12503,7 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: atomic
-    - name: hwAddress
+    - name: hardwareAddress
       type:
         scalar: string
     - name: interfaceName

@@ -46699,9 +46699,9 @@ func schema_k8sio_api_resource_v1alpha3_NetworkDeviceData(ref common.ReferenceCa
 							},
 						},
 					},
-					"hwAddress": {
+					"hardwareAddress": {
 						SchemaProps: spec.SchemaProps{
-							Description: "HWAddress represents the hardware address (e.g. MAC Address) of the device's network interface.",
+							Description: "HardwareAddress represents the hardware address (e.g. MAC Address) of the device's network interface.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
