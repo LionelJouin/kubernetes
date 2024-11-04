@@ -639,8 +639,8 @@
             "type": "array",
             "x-kubernetes-list-type": "atomic"
           },
-          "hwAddress": {
-            "description": "HWAddress represents the hardware address (e.g. MAC Address) of the device's network interface.",
+          "hardwareAddress": {
+            "description": "HardwareAddress represents the hardware address (e.g. MAC Address) of the device's network interface.",
             "type": "string"
           },
           "interfaceName": {

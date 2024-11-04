@@ -188,7 +188,7 @@
           "addresses": [
             "addressesValue"
           ],
-          "hwAddress": "hwAddressValue"
+          "hardwareAddress": "hardwareAddressValue"
         }
       }
     ]

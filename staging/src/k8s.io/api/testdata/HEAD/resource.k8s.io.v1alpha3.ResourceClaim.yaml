@@ -113,7 +113,7 @@ status:
     networkData:
       addresses:
       - addressesValue
-      hwAddress: hwAddressValue
+      hardwareAddress: hardwareAddressValue
       interfaceName: interfaceNameValue
     pool: poolValue
   reservedFor:
