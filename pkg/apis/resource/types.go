@@ -1036,8 +1036,8 @@ type NetworkDeviceData struct {
 	// +listType=atomic
 	Addresses []string
 
-	// HWAddress represents the hardware address (e.g. MAC Address) of the device's network interface.
+	// HardwareAddress represents the hardware address (e.g. MAC Address) of the device's network interface.
 	//
 	// +optional
-	HWAddress string
+	HardwareAddress string
 }
