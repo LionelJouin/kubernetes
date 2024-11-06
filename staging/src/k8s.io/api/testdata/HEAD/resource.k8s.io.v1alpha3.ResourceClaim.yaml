@@ -111,10 +111,10 @@ status:
     device: deviceValue
     driver: driverValue
     networkData:
-      addresses:
-      - addressesValue
       hardwareAddress: hardwareAddressValue
       interfaceName: interfaceNameValue
+      ips:
+      - ipsValue
     pool: poolValue
   reservedFor:
   - apiGroup: apiGroupValue

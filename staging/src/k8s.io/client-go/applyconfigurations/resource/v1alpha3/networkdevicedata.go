@@ -22,7 +22,7 @@ package v1alpha3
 // with apply.
 type NetworkDeviceDataApplyConfiguration struct {
 	InterfaceName   *string  `json:"interfaceName,omitempty"`
-	Addresses       []string `json:"addresses,omitempty"`
+	IPs             []string `json:"ips,omitempty"`
 	HardwareAddress *string  `json:"hardwareAddress,omitempty"`
 }
 
@@ -40,12 +40,12 @@ func (b *NetworkDeviceDataApplyConfiguration) WithInterfaceName(value string) *N
 	return b
 }
 
-// WithAddresses adds the given value to the Addresses field in the declarative configuration
+// WithIPs adds the given value to the IPs field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the Addresses field.
-func (b *NetworkDeviceDataApplyConfiguration) WithAddresses(values ...string) *NetworkDeviceDataApplyConfiguration {
+// If called multiple times, values provided by each call will be appended to the IPs field.
+func (b *NetworkDeviceDataApplyConfiguration) WithIPs(values ...string) *NetworkDeviceDataApplyConfiguration {
 	for i := range values {
-		b.Addresses = append(b.Addresses, values[i])
+		b.IPs = append(b.IPs, values[i])
 	}
 	return b
 }

@@ -837,7 +837,7 @@ func Convert_resource_DeviceSelector_To_v1alpha3_DeviceSelector(in *resource.Dev
 
 func autoConvert_v1alpha3_NetworkDeviceData_To_resource_NetworkDeviceData(in *resourcev1alpha3.NetworkDeviceData, out *resource.NetworkDeviceData, s conversion.Scope) error {
 	out.InterfaceName = in.InterfaceName
-	out.Addresses = *(*[]string)(unsafe.Pointer(&in.Addresses))
+	out.IPs = *(*[]string)(unsafe.Pointer(&in.IPs))
 	out.HardwareAddress = in.HardwareAddress
 	return nil
 }
@@ -849,7 +849,7 @@ func Convert_v1alpha3_NetworkDeviceData_To_resource_NetworkDeviceData(in *resour
 
 func autoConvert_resource_NetworkDeviceData_To_v1alpha3_NetworkDeviceData(in *resource.NetworkDeviceData, out *resourcev1alpha3.NetworkDeviceData, s conversion.Scope) error {
 	out.InterfaceName = in.InterfaceName
-	out.Addresses = *(*[]string)(unsafe.Pointer(&in.Addresses))
+	out.IPs = *(*[]string)(unsafe.Pointer(&in.IPs))
 	out.HardwareAddress = in.HardwareAddress
 	return nil
 }

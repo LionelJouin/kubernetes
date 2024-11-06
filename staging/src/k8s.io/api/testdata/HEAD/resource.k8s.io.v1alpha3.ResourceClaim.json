@@ -185,8 +185,8 @@
         },
         "networkData": {
           "interfaceName": "interfaceNameValue",
-          "addresses": [
-            "addressesValue"
+          "ips": [
+            "ipsValue"
           ],
           "hardwareAddress": "hardwareAddressValue"
         }

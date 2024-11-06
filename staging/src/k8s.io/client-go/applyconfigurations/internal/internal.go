@@ -12606,18 +12606,18 @@ var schemaYAML = typed.YAMLObject(`types:
 - name: io.k8s.api.resource.v1alpha3.NetworkDeviceData
   map:
     fields:
-    - name: addresses
-      type:
-        list:
-          elementType:
-            scalar: string
-          elementRelationship: atomic
     - name: hardwareAddress
       type:
         scalar: string
     - name: interfaceName
       type:
         scalar: string
+    - name: ips
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
 - name: io.k8s.api.resource.v1alpha3.OpaqueDeviceConfiguration
   map:
     fields:
