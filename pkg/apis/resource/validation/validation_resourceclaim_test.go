@@ -245,7 +245,7 @@ func TestValidateClaim(t *testing.T) {
 		"invalid-config-json": {
 			wantFailures: field.ErrorList{
 				field.Required(field.NewPath("spec", "devices", "config").Index(0).Child("opaque", "parameters"), ""),
-				field.Invalid(field.NewPath("spec", "devices", "config").Index(1).Child("opaque", "parameters"), "<value omitted>", "error parsing data: unexpected end of JSON input"),
+				field.Invalid(field.NewPath("spec", "devices", "config").Index(1).Child("opaque", "parameters"), "<value omitted>", "error parsing data as JSON: unexpected end of JSON input"),
 				field.Invalid(field.NewPath("spec", "devices", "config").Index(2).Child("opaque", "parameters"), "<value omitted>", "parameters must be a valid JSON object"),
 				field.Required(field.NewPath("spec", "devices", "config").Index(3).Child("opaque", "parameters"), ""),
 			},
@@ -730,7 +730,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 		"invalid-device-status-duplicate": {
 			wantFailures: field.ErrorList{
 				field.Duplicate(field.NewPath("status", "devices").Index(0).Child("networkData", "addresses").Index(1), "2001:db8::1/64"),
-				field.Duplicate(field.NewPath("status", "devices").Index(1).Child("deviceID"), structured.DeviceID{Driver: goodName, Pool: goodName, Device: goodName}),
+				field.Duplicate(field.NewPath("status", "devices").Index(1).Child("deviceID"), structured.MakeDeviceID(goodName, goodName, goodName)),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
@@ -804,7 +804,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 		},
 		"invalid-device-status-no-device": {
 			wantFailures: field.ErrorList{
-				field.Invalid(field.NewPath("status", "devices").Index(0), structured.DeviceID{Driver: "b", Pool: "a", Device: "r"}, "must be an allocated device in the claim"),
+				field.Invalid(field.NewPath("status", "devices").Index(0), structured.MakeDeviceID("b", "a", "r"), "must be an allocated device in the claim"),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
@@ -822,7 +822,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 		"invalid-device-status-duplicate-disabled-feature-gate": {
 			wantFailures: field.ErrorList{
 				field.Duplicate(field.NewPath("status", "devices").Index(0).Child("networkData", "addresses").Index(1), "2001:db8::1/64"),
-				field.Duplicate(field.NewPath("status", "devices").Index(1).Child("deviceID"), structured.DeviceID{Driver: goodName, Pool: goodName, Device: goodName}),
+				field.Duplicate(field.NewPath("status", "devices").Index(1).Child("deviceID"), structured.MakeDeviceID(goodName, goodName, goodName)),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
@@ -896,7 +896,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 		},
 		"invalid-device-status-no-device-disabled-feature-gate": {
 			wantFailures: field.ErrorList{
-				field.Invalid(field.NewPath("status", "devices").Index(0), structured.DeviceID{Driver: "b", Pool: "a", Device: "r"}, "must be an allocated device in the claim"),
+				field.Invalid(field.NewPath("status", "devices").Index(0), structured.MakeDeviceID("b", "a", "r"), "must be an allocated device in the claim"),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
