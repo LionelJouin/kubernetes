@@ -714,7 +714,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 						NetworkData: &resource.NetworkDeviceData{
 							InterfaceName:   strings.Repeat("x", 256),
 							HardwareAddress: strings.Repeat("x", 128),
-							Addresses: []string{
+							IPs: []string{
 								"10.9.8.0/24",
 								"2001:db8::/64",
 								"10.9.8.1/24",
@@ -729,7 +729,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 		},
 		"invalid-device-status-duplicate": {
 			wantFailures: field.ErrorList{
-				field.Duplicate(field.NewPath("status", "devices").Index(0).Child("networkData", "addresses").Index(1), "2001:db8::1/64"),
+				field.Duplicate(field.NewPath("status", "devices").Index(0).Child("networkData", "ips").Index(1), "2001:db8::1/64"),
 				field.Duplicate(field.NewPath("status", "devices").Index(1).Child("deviceID"), structured.MakeDeviceID(goodName, goodName, goodName)),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
@@ -740,7 +740,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 						Pool:   goodName,
 						Device: goodName,
 						NetworkData: &resource.NetworkDeviceData{
-							Addresses: []string{
+							IPs: []string{
 								"2001:db8::1/64",
 								"2001:0db8::1/64",
 							},
@@ -760,7 +760,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			wantFailures: field.ErrorList{
 				field.TooLong(field.NewPath("status", "devices").Index(0).Child("networkData", "interfaceName"), "", interfaceNameMaxLength),
 				field.TooLong(field.NewPath("status", "devices").Index(0).Child("networkData", "hardwareAddress"), "", hardwareAddressMaxLength),
-				field.Invalid(field.NewPath("status", "devices").Index(0).Child("networkData", "addresses").Index(0), "300.9.8.0/24", "must be a valid CIDR value, (e.g. 10.9.8.0/24 or 2001:db8::/64)"),
+				field.Invalid(field.NewPath("status", "devices").Index(0).Child("networkData", "ips").Index(0), "300.9.8.0/24", "must be a valid CIDR value, (e.g. 10.9.8.0/24 or 2001:db8::/64)"),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
@@ -772,7 +772,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 						NetworkData: &resource.NetworkDeviceData{
 							InterfaceName:   strings.Repeat("x", interfaceNameMaxLength+1),
 							HardwareAddress: strings.Repeat("x", hardwareAddressMaxLength+1),
-							Addresses: []string{
+							IPs: []string{
 								"300.9.8.0/24",
 							},
 						},
@@ -821,7 +821,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 		},
 		"invalid-device-status-duplicate-disabled-feature-gate": {
 			wantFailures: field.ErrorList{
-				field.Duplicate(field.NewPath("status", "devices").Index(0).Child("networkData", "addresses").Index(1), "2001:db8::1/64"),
+				field.Duplicate(field.NewPath("status", "devices").Index(0).Child("networkData", "ips").Index(1), "2001:db8::1/64"),
 				field.Duplicate(field.NewPath("status", "devices").Index(1).Child("deviceID"), structured.MakeDeviceID(goodName, goodName, goodName)),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
@@ -832,7 +832,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 						Pool:   goodName,
 						Device: goodName,
 						NetworkData: &resource.NetworkDeviceData{
-							Addresses: []string{
+							IPs: []string{
 								"2001:db8::1/64",
 								"2001:0db8::1/64",
 							},
@@ -852,7 +852,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 			wantFailures: field.ErrorList{
 				field.TooLong(field.NewPath("status", "devices").Index(0).Child("networkData", "interfaceName"), "", interfaceNameMaxLength),
 				field.TooLong(field.NewPath("status", "devices").Index(0).Child("networkData", "hardwareAddress"), "", hardwareAddressMaxLength),
-				field.Invalid(field.NewPath("status", "devices").Index(0).Child("networkData", "addresses").Index(0), "300.9.8.0/24", "must be a valid CIDR value, (e.g. 10.9.8.0/24 or 2001:db8::/64)"),
+				field.Invalid(field.NewPath("status", "devices").Index(0).Child("networkData", "ips").Index(0), "300.9.8.0/24", "must be a valid CIDR value, (e.g. 10.9.8.0/24 or 2001:db8::/64)"),
 			},
 			oldClaim: func() *resource.ResourceClaim { return validAllocatedClaim }(),
 			update: func(claim *resource.ResourceClaim) *resource.ResourceClaim {
@@ -864,7 +864,7 @@ func TestValidateClaimStatusUpdate(t *testing.T) {
 						NetworkData: &resource.NetworkDeviceData{
 							InterfaceName:   strings.Repeat("x", interfaceNameMaxLength+1),
 							HardwareAddress: strings.Repeat("x", hardwareAddressMaxLength+1),
-							Addresses: []string{
+							IPs: []string{
 								"300.9.8.0/24",
 							},
 						},
