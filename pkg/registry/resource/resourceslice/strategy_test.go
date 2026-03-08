@@ -25,6 +25,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/version"
 	genericapirequest "k8s.io/apiserver/pkg/endpoints/request"
 	utilfeature "k8s.io/apiserver/pkg/util/feature"
 	featuregatetesting "k8s.io/component-base/featuregate/testing"
@@ -221,11 +222,13 @@ func TestResourceSliceStrategy(t *testing.T) {
 func TestResourceSliceStrategyCreate(t *testing.T) {
 	ctx := genericapirequest.NewDefaultContext()
 	testCases := map[string]struct {
-		obj                         *resource.ResourceSlice
-		deviceTaints                bool
-		partitionableDevices        bool
-		bindingConditions           bool
-		deviceStatus                bool
+		obj                  *resource.ResourceSlice
+		deviceTaints         bool
+		partitionableDevices bool
+		bindingConditions    bool
+		// DRAResourceClaimDeviceStatus is now enable by default, but we still want to test the behavior when it's disabled until v1.39.
+		// https://github.com/kubernetes/kubernetes/issues/137770
+		deviceStatusDisabled        bool
 		consumableCapacity          bool
 		draNodeAllocatableResources bool
 		listTypeAttributes          bool
@@ -328,9 +331,9 @@ func TestResourceSliceStrategyCreate(t *testing.T) {
 			}(),
 		},
 		"drop-fields-binding-conditions": {
-			obj:               sliceWithBindingConditions,
-			bindingConditions: false,
-			deviceStatus:      false,
+			obj:                  sliceWithBindingConditions,
+			bindingConditions:    false,
+			deviceStatusDisabled: true,
 			expectObj: func() *resource.ResourceSlice {
 				obj := slice.DeepCopy()
 				obj.Generation = 1
@@ -340,7 +343,6 @@ func TestResourceSliceStrategyCreate(t *testing.T) {
 		"drop-fields-binding-conditions-with-binding-conditions": {
 			obj:               sliceWithBindingConditions,
 			bindingConditions: false,
-			deviceStatus:      true,
 			expectObj: func() *resource.ResourceSlice {
 				obj := slice.DeepCopy()
 				obj.Generation = 1
@@ -350,7 +352,6 @@ func TestResourceSliceStrategyCreate(t *testing.T) {
 		"keep-fields-binding-conditions": {
 			obj:               sliceWithBindingConditions,
 			bindingConditions: true,
-			deviceStatus:      true,
 			expectObj: func() *resource.ResourceSlice {
 				obj := sliceWithBindingConditions.DeepCopy()
 				obj.Generation = 1
@@ -411,16 +412,29 @@ func TestResourceSliceStrategyCreate(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			featuregatetesting.SetFeatureGatesDuringTest(t, utilfeature.DefaultFeatureGate, featuregatetesting.FeatureOverrides{
-				features.DRADeviceTaints:              tc.deviceTaints,
-				features.DRAPartitionableDevices:      tc.partitionableDevices,
-				features.DRADeviceBindingConditions:   tc.bindingConditions,
-				features.DRAResourceClaimDeviceStatus: tc.deviceStatus,
-				features.DRAConsumableCapacity:        tc.consumableCapacity,
-				features.DRANodeAllocatableResources:  tc.draNodeAllocatableResources,
-				features.DRAListTypeAttributes:        tc.listTypeAttributes,
-			})
 
+			if tc.deviceStatusDisabled {
+				featuregatetesting.SetFeatureGateEmulationVersionDuringTest(t, utilfeature.DefaultFeatureGate, version.MustParse("1.35"))
+
+				// When EmulationVersion is set to 1.35, some feature gates doesn't exist, so we need to set only the existing ones.
+				featuregatetesting.SetFeatureGatesDuringTest(t, utilfeature.DefaultFeatureGate, featuregatetesting.FeatureOverrides{
+					features.DRADeviceTaints:              tc.deviceTaints,
+					features.DRAPartitionableDevices:      tc.partitionableDevices,
+					features.DRADeviceBindingConditions:   tc.bindingConditions,
+					features.DRAResourceClaimDeviceStatus: !tc.deviceStatusDisabled,
+					features.DRAConsumableCapacity:        tc.consumableCapacity,
+				})
+			} else {
+				featuregatetesting.SetFeatureGatesDuringTest(t, utilfeature.DefaultFeatureGate, featuregatetesting.FeatureOverrides{
+					features.DRADeviceTaints:              tc.deviceTaints,
+					features.DRAPartitionableDevices:      tc.partitionableDevices,
+					features.DRADeviceBindingConditions:   tc.bindingConditions,
+					features.DRAResourceClaimDeviceStatus: !tc.deviceStatusDisabled,
+					features.DRAConsumableCapacity:        tc.consumableCapacity,
+					features.DRANodeAllocatableResources:  tc.draNodeAllocatableResources,
+					features.DRAListTypeAttributes:        tc.listTypeAttributes,
+				})
+			}
 			obj := tc.obj.DeepCopy()
 
 			Strategy.PrepareForCreate(ctx, obj)
@@ -443,11 +457,13 @@ func TestResourceSliceStrategyUpdate(t *testing.T) {
 	ctx := genericapirequest.NewDefaultContext()
 
 	testcases := map[string]struct {
-		oldObj                *resource.ResourceSlice
-		newObj                *resource.ResourceSlice
-		deviceTaints          bool
-		partitionableDevices  bool
-		deviceStatus          bool
+		oldObj               *resource.ResourceSlice
+		newObj               *resource.ResourceSlice
+		deviceTaints         bool
+		partitionableDevices bool
+		// DRAResourceClaimDeviceStatus is now enable by default, but we still want to test the behavior when it's disabled until v1.39.
+		// https://github.com/kubernetes/kubernetes/issues/137770
+		deviceStatusDisabled  bool
 		bindingConditions     bool
 		consumableCapacity    bool
 		listTypeAttributes    bool
@@ -713,8 +729,8 @@ func TestResourceSliceStrategyUpdate(t *testing.T) {
 				obj.Generation = 1
 				return obj
 			}(),
-			bindingConditions: false,
-			deviceStatus:      false,
+			bindingConditions:    false,
+			deviceStatusDisabled: true,
 		},
 		"drop-fields-binding-conditions-with-binding-conditions": {
 			oldObj: slice,
@@ -730,7 +746,6 @@ func TestResourceSliceStrategyUpdate(t *testing.T) {
 				return obj
 			}(),
 			bindingConditions: false,
-			deviceStatus:      true,
 		},
 		"keep-fields-binding-conditions": {
 			oldObj: slice,
@@ -746,7 +761,6 @@ func TestResourceSliceStrategyUpdate(t *testing.T) {
 				return obj
 			}(),
 			bindingConditions: true,
-			deviceStatus:      true,
 		},
 		"keep-existing-fields-binding-conditions-without-featuregate-enabled": {
 			oldObj: sliceWithBindingConditions,
@@ -763,7 +777,6 @@ func TestResourceSliceStrategyUpdate(t *testing.T) {
 				return obj
 			}(),
 			bindingConditions: false,
-			deviceStatus:      true,
 		},
 		"keep-existing-fields-consumable-capacity": {
 			oldObj: sliceWithCapacity,
@@ -851,11 +864,15 @@ func TestResourceSliceStrategyUpdate(t *testing.T) {
 
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
+
+			if tc.deviceStatusDisabled {
+				featuregatetesting.SetFeatureGateEmulationVersionDuringTest(t, utilfeature.DefaultFeatureGate, version.MustParse("1.35"))
+			}
 			featuregatetesting.SetFeatureGatesDuringTest(t, utilfeature.DefaultFeatureGate, featuregatetesting.FeatureOverrides{
 				features.DRADeviceTaints:              tc.deviceTaints,
 				features.DRAPartitionableDevices:      tc.partitionableDevices,
 				features.DRADeviceBindingConditions:   tc.bindingConditions,
-				features.DRAResourceClaimDeviceStatus: tc.deviceStatus,
+				features.DRAResourceClaimDeviceStatus: !tc.deviceStatusDisabled,
 				features.DRAConsumableCapacity:        tc.consumableCapacity,
 			})
 

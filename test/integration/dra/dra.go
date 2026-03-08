@@ -155,7 +155,6 @@ func run(tCtx ktesting.TContext, whatRE string) {
 				})
 				runSubTest(tCtx, "ExplicitExtendedResource", func(tCtx ktesting.TContext) { testExtendedResource(tCtx, false, true) })
 				runSubTest(tCtx, "ImplicitExtendedResource", func(tCtx ktesting.TContext) { testExtendedResource(tCtx, false, false) })
-				runSubTest(tCtx, "ResourceClaimDeviceStatus", func(tCtx ktesting.TContext) { testResourceClaimDeviceStatus(tCtx, false) })
 				runSubTest(tCtx, "DeviceBindingConditions", func(tCtx ktesting.TContext) { testDeviceBindingConditions(tCtx, false) })
 				runSubTest(tCtx, "ResourceSliceController", func(tCtx ktesting.TContext) {
 					namespace := createTestNamespace(tCtx, nil)
@@ -172,11 +171,13 @@ func run(tCtx ktesting.TContext, whatRE string) {
 		"GA-opt-out": {
 			apis: map[schema.GroupVersion]bool{},
 			features: map[featuregate.Feature]bool{
-				featuregate.Feature("AllBeta"): false,
-				features.DRAPrioritizedList:    false,
+				featuregate.Feature("AllBeta"):        false,
+				features.DRAPrioritizedList:           false,
+				features.DRAResourceClaimDeviceStatus: false,
 			},
 			f: func(tCtx ktesting.TContext) {
 				runSubTest(tCtx, "PrioritizedList", func(tCtx ktesting.TContext) { testPrioritizedList(tCtx, false) })
+				runSubTest(tCtx, "ResourceClaimDeviceStatus", func(tCtx ktesting.TContext) { testResourceClaimDeviceStatus(tCtx, false) })
 			},
 		},
 		"v1beta1": {
@@ -280,6 +281,10 @@ func run(tCtx ktesting.TContext, whatRE string) {
 			// We need to set emulation version for DynamicResourceAllocation feature gate, which is locked at 1.35.
 			if draEnabled, draExists := tc.features[features.DynamicResourceAllocation]; draExists && !draEnabled {
 				featuregatetesting.SetFeatureGateEmulationVersionDuringTest(tCtx, utilfeature.DefaultFeatureGate, version.MustParse("1.34"))
+			}
+			// We need to set emulation version for DRAResourceClaimDeviceStatus feature gate, which is locked at 1.36.
+			if enabled, exists := tc.features[features.DRAResourceClaimDeviceStatus]; exists && !enabled {
+				featuregatetesting.SetFeatureGateEmulationVersionDuringTest(tCtx, utilfeature.DefaultFeatureGate, version.MustParse("1.35"))
 			}
 			featuregatetesting.SetFeatureGatesDuringTest(tCtx, utilfeature.DefaultFeatureGate, tc.features)
 
