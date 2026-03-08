@@ -1564,7 +1564,7 @@ func TestStatusStrategyUpdate(t *testing.T) {
 			mockNSClient := fakeClient.CoreV1().Namespaces()
 			strategy := NewStrategy(mockNSClient)
 
-			if !tc.adminAccess {
+			if !tc.adminAccess || !tc.deviceStatusFeatureGate {
 				featuregatetesting.SetFeatureGateEmulationVersionDuringTest(t, utilfeature.DefaultFeatureGate, version.MustParse("1.35"))
 			}
 			featuregatetesting.SetFeatureGatesDuringTest(t, utilfeature.DefaultFeatureGate, featuregatetesting.FeatureOverrides{

@@ -155,7 +155,8 @@ func TestDRA(t *testing.T) {
 		"GA": {
 			apis: map[schema.GroupVersion]bool{},
 			features: map[featuregate.Feature]bool{
-				featuregate.Feature("AllBeta"): false,
+				featuregate.Feature("AllBeta"):        false,
+				features.DRAResourceClaimDeviceStatus: false,
 			},
 			f: func(tCtx ktesting.TContext) {
 				tCtx.Run("AdminAccess", func(tCtx ktesting.TContext) { testAdminAccess(tCtx, false) })
@@ -279,6 +280,10 @@ func TestDRA(t *testing.T) {
 			// We need to set emulation version for DynamicResourceAllocation feature gate, which is locked at 1.35.
 			if draEnabled, draExists := tc.features[features.DynamicResourceAllocation]; draExists && !draEnabled {
 				featuregatetesting.SetFeatureGateEmulationVersionDuringTest(t, utilfeature.DefaultFeatureGate, version.MustParse("1.34"))
+			}
+			// We need to set emulation version for DRAResourceClaimDeviceStatus feature gate, which is locked at 1.36.
+			if enabled, exists := tc.features[features.DRAResourceClaimDeviceStatus]; exists && !enabled {
+				featuregatetesting.SetFeatureGateEmulationVersionDuringTest(t, utilfeature.DefaultFeatureGate, version.MustParse("1.35"))
 			}
 			featuregatetesting.SetFeatureGatesDuringTest(t, utilfeature.DefaultFeatureGate, tc.features)
 
